@@ -30,9 +30,10 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({ onConfirmSha
   const shape = JSON.stringify(shapeStrides.map(shapeStride => shapeStride.shape))
   const stride = JSON.stringify(shapeStrides.map(shapeStride => shapeStride.stride))
   useEffect(() => {
-    // if (shape.length > 0) {
+    if (shape.length > 0) {
+      console.log({shape, stride})
       onConfirmShapeStrides([JSON.parse(shape), JSON.parse(stride)]);
-    // }
+    }
   }, [onConfirmShapeStrides, shape, stride]);
 
   return <div>

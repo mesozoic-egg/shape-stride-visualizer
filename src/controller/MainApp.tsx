@@ -11,18 +11,18 @@ interface MainAppProps {
 export const MainApp: React.FC<MainAppProps> = () => {
   const [shapeStrides, setShapeStrides] = useState<number[][]>([[], []])
   const [memoryLayout, setMemoryLayout] = useState<DataElement[]>([])
-  const [shapeLayout, setShapeLayout] = useState<NestedDataElementArray[]>([])
+  const [shapeLayout, setShapeLayout] = useState<[NestedDataElementArray[], number[]]>([[], []])
   useEffect(() => {
-    if (shapeStrides.length) {
+    if (shapeStrides.length && shapeStrides[0].length && shapeStrides[1].length) {
       const [shape, flattened] = constructDataElementsForShape(shapeStrides[0], shapeStrides[1])
-      setShapeLayout(shape)
+      setShapeLayout([shape, shapeStrides[0]])
       setMemoryLayout(flattened)
     }
   }, [shapeStrides])
   return <div>
     <ShapeStrideInput onConfirmShapeStrides={setShapeStrides} />
     <MemoryVisualizer dataElements={memoryLayout} />
-    <ShapeVisualizer dataElements={shapeLayout} shape={shapeStrides[0]}/>
+    <ShapeVisualizer dataElements={shapeLayout[0]} shape={shapeLayout[1]}/>
   </div>
 }
 
