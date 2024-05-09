@@ -3,7 +3,6 @@ import { ShapeStride } from "../model/shape"
 import {
   Button,
   Card,
-  Carousel,
   Flex,
   InputNumber,
   Text,

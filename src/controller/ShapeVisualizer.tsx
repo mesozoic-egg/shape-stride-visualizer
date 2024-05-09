@@ -1,5 +1,5 @@
-import { DataElement, NestedDataElementArray } from "../model/dataElement"
-import { Button, Card, Flex, TextAlign, Title } from "../view/ui"
+import { NestedDataElementArray } from "../model/dataElement"
+import { Card, TextAlign, Title } from "../view/ui"
 import { ShapeLayout } from "../view/ShapeLayout"
 
 interface ShapeVisualizerProps {

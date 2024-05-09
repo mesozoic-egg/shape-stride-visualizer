@@ -1,4 +1,4 @@
-import { Button, Title } from "./ui"
+import { Button } from "./ui"
 import { NestedDataElementArray } from "../model/dataElement"
 
 interface ShapeLayoutProps {

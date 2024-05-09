@@ -3,7 +3,6 @@ import {
   MemorySlot,
   NestedDataElementArray,
 } from "../model/dataElement"
-import { ShapeStride } from "../model/shape"
 
 export const constructDataElementsForShape = (
   shape: number[],
