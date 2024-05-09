@@ -1,7 +1,7 @@
 
 import { DataElement, NestedDataElementArray } from '../model/dataElement';
-import { Button, Card, Flex, TextAlign } from '../view';
-import { ShapeLayout } from './ShapeVisualizer2';
+import { Button, Card, Flex, TextAlign, Title } from '../view/ui';
+import { ShapeLayout } from '../view/ShapeLayout';
 
 interface ShapeVisualizerProps {
   dataElements: NestedDataElementArray[];
@@ -10,7 +10,8 @@ interface ShapeVisualizerProps {
 
 export const ShapeVisualizer: React.FC<ShapeVisualizerProps> = ({ dataElements, shape }) => {
   return <div>
-    <Card maxWidth={600} margin={10}>
+    <ShapeVisualizerTitle />
+    <Card maxWidth={600} margin={10} center>
       <TextAlign>
         <ShapeLayout dataElements={dataElements} shape={shape} />
       </TextAlign>
@@ -18,3 +19,5 @@ export const ShapeVisualizer: React.FC<ShapeVisualizerProps> = ({ dataElements, 
   </div>
 }
 
+
+const ShapeVisualizerTitle = () => <Title level={2}>Shape layout</Title>

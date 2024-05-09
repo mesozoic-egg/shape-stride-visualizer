@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react'
 import '@testing-library/jest-dom'
-import { ShapeLayout } from './ShapeVisualizer2';
+import { ShapeLayout } from './ShapeLayout';
 import { DataElement, NestedDataElementArray } from "../model/dataElement";
 
 describe('ShapeLayout Component', () => {

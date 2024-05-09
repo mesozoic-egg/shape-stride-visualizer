@@ -1,4 +1,4 @@
-import { Button } from "../view"
+import { Button, Title } from "./ui"
 import { NestedDataElementArray } from "../model/dataElement"
 
 interface ShapeLayoutProps {
@@ -39,3 +39,6 @@ export const ShapeLayout: React.FC<ShapeLayoutProps> = ({ shape, dataElements })
     </div>    
   }
 }
+
+
+
