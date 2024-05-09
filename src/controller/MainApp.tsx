@@ -4,7 +4,7 @@ import { ShapeStrideInput } from "./ShapeStrideInput"
 import { DataElement, NestedDataElementArray } from "../model/dataElement"
 import { constructDataElementsForShape } from "../utils/constructDataElements"
 import { ShapeVisualizer } from "./ShapeVisualizer"
-import { Canvas, Space, Title } from "../view/ui"
+import { Canvas, Link, Space, Title } from "../view/ui"
 
 const MainAppControl: React.FC<{}> = () => {
   const [shapeStrides, setShapeStrides] = useState<number[][]>([[], []])
@@ -36,12 +36,13 @@ const MainAppControl: React.FC<{}> = () => {
 }
 
 const AppTitle = () => <Title level={1}>Shape and stride visualizer</Title>
-
+const GithubLink = () => <Link href="https://github.com/mesozoic-egg/shape-stride-visualizer" target="_blank">Github Link</Link>
 interface MainAppProps {}
 export const MainApp: React.FC<MainAppProps> = () => {
   return (
     <Canvas maxWidth={1000}>
       <AppTitle />
+      <GithubLink/>
       <MainAppControl />
       <Space size={100} />
     </Canvas>

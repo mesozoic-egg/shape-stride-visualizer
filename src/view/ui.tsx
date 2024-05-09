@@ -7,7 +7,7 @@ import {
 } from "antd"
 import React from "react"
 
-const { Title: TitleAnt, Text: TextAnt } = Typography
+const { Title: TitleAnt, Text: TextAnt, Link: LinkAnt } = Typography
 
 interface WithChildren {
   children?: React.ReactNode
@@ -189,3 +189,12 @@ export const Carousel: React.FC<CarouselProps> = ({ maxWidth, children }) => {
     <div style={{ maxWidth: maxWidth, overflow: "scroll" }}>{children}</div>
   )
 }
+
+interface LinkProps extends WithChildren {
+  href: string
+  target?: string
+}
+export const Link: React.FC<LinkProps> = ({ href, target, children }) => {
+  return <LinkAnt href={href} target={target}>{children}</LinkAnt>
+}
+
