@@ -1,8 +1,6 @@
 export type NestedDataElementArray = DataElement | NestedDataElementArray[]
 export class MemorySlot {
-  constructor(
-    public address: number
-  ) {}
+  constructor(public address: number) {}
 
   toString() {
     return `0x${this.address}`
@@ -13,5 +11,4 @@ export class MemorySlot {
   }
 }
 
-export class DataElement extends MemorySlot {
-}
+export class DataElement extends MemorySlot {}

@@ -66,6 +66,7 @@ export const Button: React.FC<ButtonProps> = ({
 }
 
 interface CardProps extends WithChildren {
+  width?: number
   maxWidth?: number
   margin?: number
   center?: boolean
@@ -75,10 +76,12 @@ export const Card: React.FC<CardProps> = ({
   maxWidth,
   margin,
   center,
+  width,
 }) => {
   return (
     <CardAnt
       style={{
+        width: width,
         maxWidth: maxWidth,
         margin: center ? "0 auto" : margin,
       }}
@@ -154,8 +157,6 @@ export const Space: React.FC<SpaceProps> = ({
   )
 }
 
-
-
 interface CanvasProps extends WithChildren {
   maxWidth?: number
   maxHeight?: number
@@ -178,5 +179,14 @@ export const Canvas: React.FC<CanvasProps> = ({
     >
       {children}
     </div>
+  )
+}
+
+interface CarouselProps extends WithChildren {
+  maxWidth?: number
+}
+export const Carousel: React.FC<CarouselProps> = ({ maxWidth, children }) => {
+  return (
+    <div style={{ maxWidth: maxWidth, overflow: "scroll" }}>{children}</div>
   )
 }

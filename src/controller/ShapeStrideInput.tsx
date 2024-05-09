@@ -1,6 +1,14 @@
 import { useEffect, useState, useCallback } from "react"
 import { ShapeStride } from "../model/shape"
-import { Button, Card, Flex, InputNumber, Text, Title } from "../view/ui"
+import {
+  Button,
+  Card,
+  Carousel,
+  Flex,
+  InputNumber,
+  Text,
+  Title,
+} from "../view/ui"
 
 interface ShapeStrideInputProps {
   onConfirmShapeStrides: (shapeStrides: number[][]) => void
@@ -16,12 +24,12 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
   ])
   const setShape = useCallback((id: number, shape: number) => {
     setShapeStrides((_shapeStrides) =>
-      _shapeStrides.map((s) => (s.id === id ? { ...s, shape } : s))
+      _shapeStrides.map((s) => (s.id === id ? { ...s, shape } : s)),
     )
   }, [])
   const setStride = useCallback((id: number, stride: number) => {
     setShapeStrides((_shapeStrides) =>
-      _shapeStrides.map((s) => (s.id === id ? { ...s, stride } : s))
+      _shapeStrides.map((s) => (s.id === id ? { ...s, stride } : s)),
     )
   }, [])
   const addShapeStrideTo = (position: "start" | "end") => {
@@ -29,21 +37,21 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
     setShapeStrides(
       position === "start"
         ? [shapeStride, ...shapeStrides]
-        : [...shapeStrides, shapeStride]
+        : [...shapeStrides, shapeStride],
     )
     setCount((_count) => _count + 1)
   }
   const removeShapeStride = (shapeStride: ShapeStride) => {
     setShapeStrides((_shapeStrides) =>
-      _shapeStrides.filter((s) => s !== shapeStride)
+      _shapeStrides.filter((s) => s !== shapeStride),
     )
   }
 
   const shape = JSON.stringify(
-    shapeStrides.map((shapeStride) => shapeStride.shape)
+    shapeStrides.map((shapeStride) => shapeStride.shape),
   )
   const stride = JSON.stringify(
-    shapeStrides.map((shapeStride) => shapeStride.stride)
+    shapeStrides.map((shapeStride) => shapeStride.stride),
   )
   useEffect(() => {
     if (shape.length > 0) {
@@ -56,41 +64,39 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
     <div>
       <InputAreaTitle />
       <Explanation />
-      <div>
-        <Flex justify="center">
-          <Button antType="primary" onClick={() => addShapeStrideTo("start")}>
-            Add
-          </Button>
-          {shapeStrides.map((shapeStride, i) => (
-            <div key={shapeStride.id}>
-              <Card maxWidth={150} margin={10}>
-                <label>Index: {i}</label>
-                <InputBox
-                  label="Shape"
-                  id={shapeStride.id}
-                  onValueConfirm={setShape}
-                  prefilled={shapeStride.shape}
-                />
-                <InputBox
-                  label="Stride"
-                  id={shapeStride.id}
-                  onValueConfirm={setStride}
-                  prefilled={shapeStride.stride}
-                />
-                <Button
-                  antType="dashed"
-                  onClick={() => removeShapeStride(shapeStride)}
-                >
-                  Remove
-                </Button>
-              </Card>
-            </div>
-          ))}
-          <Button antType="primary" onClick={() => addShapeStrideTo("end")}>
-            Add
-          </Button>
-        </Flex>
-      </div>
+      <Flex justify="center" wrap="wrap">
+        <Button antType="primary" onClick={() => addShapeStrideTo("start")}>
+          Add
+        </Button>
+        {shapeStrides.map((shapeStride, i) => (
+          <div key={shapeStride.id}>
+            <Card width={150} margin={10}>
+              <label>Index: {i}</label>
+              <InputBox
+                label="Shape"
+                id={shapeStride.id}
+                onValueConfirm={setShape}
+                prefilled={shapeStride.shape}
+              />
+              <InputBox
+                label="Stride"
+                id={shapeStride.id}
+                onValueConfirm={setStride}
+                prefilled={shapeStride.stride}
+              />
+              <Button
+                antType="dashed"
+                onClick={() => removeShapeStride(shapeStride)}
+              >
+                Remove
+              </Button>
+            </Card>
+          </div>
+        ))}
+        <Button antType="primary" onClick={() => addShapeStrideTo("end")}>
+          Add
+        </Button>
+      </Flex>
     </div>
   )
 }

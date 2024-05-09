@@ -20,7 +20,7 @@ const MainAppControl: React.FC<{}> = () => {
     ) {
       const [shape, flattened] = constructDataElementsForShape(
         shapeStrides[0],
-        shapeStrides[1]
+        shapeStrides[1],
       )
       setShapeLayout([shape, shapeStrides[0]])
       setMemoryLayout(flattened)
