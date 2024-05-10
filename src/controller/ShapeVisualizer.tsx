@@ -14,7 +14,7 @@ export const ShapeVisualizer: React.FC<ShapeVisualizerProps> = ({
   return (
     <div>
       <ShapeVisualizerTitle />
-      <Card maxWidth={600} margin={10} center>
+      <Card maxWidth={1800} margin={10} center>
         <TextAlign>
           <ShapeLayout dataElements={dataElements} shape={shape} />
         </TextAlign>

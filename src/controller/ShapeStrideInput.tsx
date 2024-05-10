@@ -126,7 +126,7 @@ const InputBox: React.FC<InputBoxProps> = ({
     <div>
       <label>{label}</label>
       <InputNumber
-        width={50}
+        width={60}
         value={value as any}
         onChange={(e) => setValue(e.target.value)}
       />
