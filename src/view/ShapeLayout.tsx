@@ -33,14 +33,19 @@ export const ShapeLayout: React.FC<ShapeLayoutProps> = ({
         <div>
           <span>[</span>
         </div>
-        {range.map((i) => (
-          <div key={i} style={{ marginLeft: `2ch` }}>
-            <ShapeLayout
-              shape={shape.slice(1)}
-              dataElements={dataElements[i] as NestedDataElementArray[]}
-            />
-          </div>
-        ))}
+        {range.map((i) => {
+          if (dataElements[i] === undefined) {
+            throw new Error(`dataElements[${i}] is undefined`)
+          }
+          return (
+            <div key={i} style={{ marginLeft: `2ch` }}>
+              <ShapeLayout
+                shape={shape.slice(1)}
+                dataElements={dataElements[i] as NestedDataElementArray[]}
+              />
+            </div>
+          )
+        })}
         <div>
           <span>]</span>
         </div>

@@ -1,6 +1,7 @@
 import { NestedDataElementArray } from "../model/dataElement"
 import { Card, TextAlign, Title } from "../view/ui"
 import { ShapeLayout } from "../view/ShapeLayout"
+import ErrorBoundary from "antd/es/alert/ErrorBoundary"
 
 interface ShapeVisualizerProps {
   dataElements: NestedDataElementArray[]
@@ -16,7 +17,9 @@ export const ShapeVisualizer: React.FC<ShapeVisualizerProps> = ({
       <ShapeVisualizerTitle />
       <Card maxWidth={1800} margin={10} center>
         <TextAlign>
-          <ShapeLayout dataElements={dataElements} shape={shape} />
+          <ErrorBoundary message={"Something went wrong"}>
+            <ShapeLayout dataElements={dataElements} shape={shape} />
+          </ErrorBoundary>
         </TextAlign>
       </Card>
     </div>

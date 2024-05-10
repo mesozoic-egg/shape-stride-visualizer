@@ -1,11 +1,19 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { MemoryVisualizer } from "./MemoryVisualizer"
 import { ShapeStrideInput } from "./ShapeStrideInput"
 import { DataElement, NestedDataElementArray } from "../model/dataElement"
-import { constructDataElementsForShape } from "../utils/constructDataElements"
+import {
+  arrangeIntoShape,
+  constructDataElements,
+  constructDataElementsForShape,
+} from "../utils/constructDataElements"
 import { ShapeVisualizer } from "./ShapeVisualizer"
 import { Canvas, Link, Space, Title } from "../view/ui"
-import { validateShapeStrides } from "../utils/validateShapeStrides"
+import {
+  checkCompatibleShapeStrides,
+  validateShapeStrides,
+} from "../utils/validateShapeStrides"
+import { ShapeStride } from "../model/shape"
 
 const MainAppControl: React.FC<{}> = () => {
   const [shapeStrides, setShapeStrides] = useState<number[][]>([[], []])
@@ -19,13 +27,39 @@ const MainAppControl: React.FC<{}> = () => {
       shapeStrides[0].length &&
       shapeStrides[1].length
     ) {
-      const [shape, flattened] = constructDataElementsForShape(
-        shapeStrides[0],
-        shapeStrides[1],
-      )
-      setShapeLayout([shape, shapeStrides[0]])
-      setMemoryLayout(flattened)
+      const elements = constructDataElements({
+        shape: shapeStrides[0],
+        stride: shapeStrides[1],
+      })
+      const elementsAsShape = arrangeIntoShape({
+        dataElements: elements,
+        shape: shapeStrides[0],
+        stride: shapeStrides[1],
+      })
+      setShapeLayout([elementsAsShape, shapeStrides[0]])
+      setMemoryLayout(elements)
     }
+  }, [shapeStrides])
+  const [shapeStrides2, setShapeStrides2] = useState<number[][]>([[], []])
+  const [shapeLayout2, setShapeLayout2] = useState<
+    [NestedDataElementArray[], number[]]
+  >([[], []])
+  useEffect(() => {
+    if (
+      shapeStrides2.length &&
+      shapeStrides2[0].length &&
+      shapeStrides2[1].length
+    ) {
+      const elementsAsShape = arrangeIntoShape({
+        dataElements: memoryLayout,
+        shape: shapeStrides2[0],
+        stride: shapeStrides2[1],
+      })
+      setShapeLayout2([elementsAsShape, shapeStrides2[0]])
+    }
+  }, [shapeStrides2, memoryLayout])
+  const _checkCompatibleShapeStrides = useMemo(() => {
+    return checkCompatibleShapeStrides(shapeStrides[0], shapeStrides[1])
   }, [shapeStrides])
   return (
     <div>
@@ -35,6 +69,15 @@ const MainAppControl: React.FC<{}> = () => {
       />
       <MemoryVisualizer dataElements={memoryLayout} />
       <ShapeVisualizer dataElements={shapeLayout[0]} shape={shapeLayout[1]} />
+      <ShapeStrideInput
+        onConfirmShapeStrides={setShapeStrides2}
+        validateShapeStrides={_checkCompatibleShapeStrides}
+        initialShapeStrides={[
+          new ShapeStride(3, 2, 0),
+          new ShapeStride(2, 1, 1),
+        ]}
+      />
+      <ShapeVisualizer dataElements={shapeLayout2[0]} shape={shapeLayout2[1]} />
     </div>
   )
 }

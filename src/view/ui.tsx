@@ -195,6 +195,9 @@ interface LinkProps extends WithChildren {
   target?: string
 }
 export const Link: React.FC<LinkProps> = ({ href, target, children }) => {
-  return <LinkAnt href={href} target={target}>{children}</LinkAnt>
+  return (
+    <LinkAnt href={href} target={target}>
+      {children}
+    </LinkAnt>
+  )
 }
-

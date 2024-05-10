@@ -12,7 +12,9 @@ export const MemoryVisualizer: React.FC<MemoryVisualizerProps> = ({
   if (dataElements.length === 0) {
     return null
   }
-  const _dataElementsSorted = [...dataElements].sort((a, b) => a.address - b.address)
+  const _dataElementsSorted = [...dataElements].sort(
+    (a, b) => a.address - b.address,
+  )
   const dataElementsNoGaps = fillGapInDataElements(_dataElementsSorted)
   return (
     <div>

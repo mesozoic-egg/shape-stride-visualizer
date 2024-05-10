@@ -1,30 +1,22 @@
 import { useEffect, useState, useCallback } from "react"
 import { ShapeStride } from "../model/shape"
-import {
-  Button,
-  Card,
-  Flex,
-  InputNumber,
-  Text,
-  Title,
-} from "../view/ui"
+import { Button, Card, Flex, InputNumber, Text, Title } from "../view/ui"
 import { ShapeStrideValidator } from "../utils/validateShapeStrides"
 
 interface ShapeStrideInputProps {
   onConfirmShapeStrides: (shapeStrides: number[][]) => void
   validateShapeStrides?: ShapeStrideValidator
+  initialShapeStrides?: ShapeStride[]
 }
 export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
   onConfirmShapeStrides,
   validateShapeStrides = () => undefined,
+  initialShapeStrides = [new ShapeStride(2, 3, 0), new ShapeStride(3, 1, 1)],
 }) => {
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
   const [count, setCount] = useState<number>(3)
-  const [shapeStrides, setShapeStrides] = useState<ShapeStride[]>([
-    new ShapeStride(2, 9, 0),
-    new ShapeStride(3, 3, 1),
-    new ShapeStride(3, 1, 2),
-  ])
+  const [shapeStrides, setShapeStrides] =
+    useState<ShapeStride[]>(initialShapeStrides)
   const setShape = useCallback((id: number, shape: number) => {
     setShapeStrides((_shapeStrides) =>
       _shapeStrides.map((s) => (s.id === id ? { ...s, shape } : s)),
@@ -136,7 +128,8 @@ const InputBox: React.FC<InputBoxProps> = ({
   }, [id, value, onValueConfirm])
   return (
     <div>
-      <label>{label}</label><br/>
+      <label>{label}</label>
+      <br />
       <InputNumber
         width={60}
         value={value as any}
