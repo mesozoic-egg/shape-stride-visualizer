@@ -149,9 +149,9 @@ export const arrangeIntoShape = ({
       return elements
     }
     const elements: NestedDataElementArray[] = []
-    for (let i = 0; i < shape[0]; i++) {
+    for (let i = 0; i < _shape[0]; i++) {
       elements.push(fill(_shape.slice(1), _stride.slice(1), address))
-      address += stride[0]
+      address += _stride[0]
     }
     return elements
   }

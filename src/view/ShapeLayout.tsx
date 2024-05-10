@@ -35,6 +35,7 @@ export const ShapeLayout: React.FC<ShapeLayoutProps> = ({
         </div>
         {range.map((i) => {
           if (dataElements[i] === undefined) {
+            console.log({ dataElements, shape })
             throw new Error(`dataElements[${i}] is undefined`)
           }
           return (

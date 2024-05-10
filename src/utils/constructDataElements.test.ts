@@ -150,3 +150,21 @@ describe("arangeIntoShape function", () => {
     ])
   })
 })
+
+describe("construct elements and arrange", () => {
+  it("should handle more than 2 dimensions", () => {
+    const args = { shape: [1, 2, 3], stride: [0, 3, 1] }
+    const elements = constructDataElements(args)
+    const arranged = arrangeIntoShape({
+      dataElements: elements,
+      shape: args.shape,
+      stride: args.stride,
+    })
+    expect(arranged).toEqual([
+      [
+        [new DataElement(0), new DataElement(1), new DataElement(2)],
+        [new DataElement(3), new DataElement(4), new DataElement(5)],
+      ],
+    ])
+  })
+})
