@@ -8,13 +8,17 @@ import {
   Text,
   Title,
 } from "../view/ui"
+import { ShapeStrideValidator } from "../utils/validateShapeStrides"
 
 interface ShapeStrideInputProps {
   onConfirmShapeStrides: (shapeStrides: number[][]) => void
+  validateShapeStrides?: ShapeStrideValidator
 }
 export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
   onConfirmShapeStrides,
+  validateShapeStrides = () => undefined,
 }) => {
+  const [errorMsg, setErrorMsg] = useState<string | undefined>()
   const [count, setCount] = useState<number>(3)
   const [shapeStrides, setShapeStrides] = useState<ShapeStride[]>([
     new ShapeStride(2, 9, 0),
@@ -54,10 +58,17 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
   )
   useEffect(() => {
     if (shape.length > 0) {
-      console.log({ shape, stride })
-      onConfirmShapeStrides([JSON.parse(shape), JSON.parse(stride)])
+      const _shape = JSON.parse(shape)
+      const _stride = JSON.parse(stride)
+      const error = validateShapeStrides(_shape, _stride)
+      if (error) {
+        setErrorMsg(error.message)
+      } else {
+        setErrorMsg(undefined)
+        onConfirmShapeStrides([_shape, _stride])
+      }
     }
-  }, [onConfirmShapeStrides, shape, stride])
+  }, [onConfirmShapeStrides, shape, stride, validateShapeStrides])
 
   return (
     <div>
@@ -96,6 +107,7 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
           Add
         </Button>
       </Flex>
+      {errorMsg && <Text type="danger">Error: {errorMsg}</Text>}
     </div>
   )
 }
@@ -124,7 +136,7 @@ const InputBox: React.FC<InputBoxProps> = ({
   }, [id, value, onValueConfirm])
   return (
     <div>
-      <label>{label}</label>
+      <label>{label}</label><br/>
       <InputNumber
         width={60}
         value={value as any}
