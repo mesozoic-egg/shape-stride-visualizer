@@ -5,7 +5,6 @@ import { DataElement, NestedDataElementArray } from "../model/dataElement"
 import {
   arrangeIntoShape,
   constructDataElements,
-  constructDataElementsForShape,
 } from "../utils/constructDataElements"
 import { ShapeVisualizer } from "./ShapeVisualizer"
 import { Canvas, Link, Space, Title } from "../view/ui"

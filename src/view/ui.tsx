@@ -69,6 +69,7 @@ interface CardProps extends WithChildren {
   maxWidth?: number
   margin?: number
   center?: boolean
+  overflow?: string
 }
 export const Card: React.FC<CardProps> = ({
   children,
@@ -76,6 +77,7 @@ export const Card: React.FC<CardProps> = ({
   margin,
   center,
   width,
+  overflow = "scroll",
 }) => {
   return (
     <CardAnt
@@ -83,6 +85,7 @@ export const Card: React.FC<CardProps> = ({
         width: width,
         maxWidth: maxWidth,
         margin: center ? "0 auto" : margin,
+        overflow,
       }}
     >
       {children}
@@ -116,10 +119,6 @@ export const InputNumber: React.FC<InputNumberProps> = ({
       }}
     />
   )
-}
-
-export const TextAlign: React.FC<WithChildren> = ({ children }) => {
-  return <div style={{ textAlign: "start" }}>{children}</div>
 }
 
 interface TitleProps extends WithChildren {
@@ -200,4 +199,15 @@ export const Link: React.FC<LinkProps> = ({ href, target, children }) => {
       {children}
     </LinkAnt>
   )
+}
+
+interface TextAlignProps extends WithChildren {
+  align?: "start" | "end" | "center"
+}
+export const TextAlign: React.FC<TextAlignProps> = ({ align, children }) => {
+  return <div style={{ textAlign: align }}>{children}</div>
+}
+
+export const NoWrap: React.FC<WithChildren> = ({ children }) => {
+  return <div style={{ whiteSpace: "nowrap" }}>{children}</div>
 }

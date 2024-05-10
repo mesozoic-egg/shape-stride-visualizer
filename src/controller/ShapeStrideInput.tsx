@@ -1,7 +1,17 @@
 import { useEffect, useState, useCallback } from "react"
 import { ShapeStride } from "../model/shape"
-import { Button, Card, Flex, InputNumber, Text, Title } from "../view/ui"
+import {
+  Button,
+  Card,
+  Flex,
+  InputNumber,
+  Space,
+  Text,
+  TextAlign,
+  Title,
+} from "../view/ui"
 import { ShapeStrideValidator } from "../utils/validateShapeStrides"
+import { DeleteOutlined, PlusOutlined } from "../view/icons"
 
 interface ShapeStrideInputProps {
   onConfirmShapeStrides: (shapeStrides: number[][]) => void
@@ -66,37 +76,42 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
     <div>
       <InputAreaTitle />
       <Explanation />
-      <Flex justify="center" wrap="wrap">
+      <Flex justify="flex-start" wrap="wrap">
         <Button antType="primary" onClick={() => addShapeStrideTo("start")}>
-          Add
+          <PlusOutlined />
         </Button>
         {shapeStrides.map((shapeStride, i) => (
           <div key={shapeStride.id}>
-            <Card width={150} margin={10}>
-              <label>Index: {i}</label>
-              <InputBox
-                label="Shape"
-                id={shapeStride.id}
-                onValueConfirm={setShape}
-                prefilled={shapeStride.shape}
-              />
-              <InputBox
-                label="Stride"
-                id={shapeStride.id}
-                onValueConfirm={setStride}
-                prefilled={shapeStride.stride}
-              />
-              <Button
-                antType="dashed"
-                onClick={() => removeShapeStride(shapeStride)}
-              >
-                Remove
-              </Button>
-            </Card>
+            <TextAlign align="center">
+              <Card width={120} margin={10}>
+                <label>Index: {i}</label>
+                <InputBox
+                  label="Shape"
+                  id={shapeStride.id}
+                  onValueConfirm={setShape}
+                  prefilled={shapeStride.shape}
+                />
+                <InputBox
+                  label="Stride"
+                  id={shapeStride.id}
+                  onValueConfirm={setStride}
+                  prefilled={shapeStride.stride}
+                />
+                <Space size={10} />
+                <Button
+                  title="Delete ShapeStride"
+                  aria-label={`Delete ShapeStride at index ${i}`}
+                  antType="dashed"
+                  onClick={() => removeShapeStride(shapeStride)}
+                >
+                  <DeleteOutlined />
+                </Button>
+              </Card>
+            </TextAlign>
           </div>
         ))}
         <Button antType="primary" onClick={() => addShapeStrideTo("end")}>
-          Add
+          <PlusOutlined />
         </Button>
       </Flex>
       {errorMsg && <Text type="danger">Error: {errorMsg}</Text>}

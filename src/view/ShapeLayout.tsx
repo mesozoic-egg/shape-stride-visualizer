@@ -1,4 +1,4 @@
-import { Button } from "./ui"
+import { Button, NoWrap } from "./ui"
 import { NestedDataElementArray } from "../model/dataElement"
 
 interface ShapeLayoutProps {
@@ -30,26 +30,28 @@ export const ShapeLayout: React.FC<ShapeLayoutProps> = ({
     const range = Array.from({ length: shape[0] }, (_, i) => i)
     return (
       <div>
-        <div>
-          <span>[</span>
-        </div>
-        {range.map((i) => {
-          if (dataElements[i] === undefined) {
-            console.log({ dataElements, shape })
-            throw new Error(`dataElements[${i}] is undefined`)
-          }
-          return (
-            <div key={i} style={{ marginLeft: `2ch` }}>
-              <ShapeLayout
-                shape={shape.slice(1)}
-                dataElements={dataElements[i] as NestedDataElementArray[]}
-              />
-            </div>
-          )
-        })}
-        <div>
-          <span>]</span>
-        </div>
+        <NoWrap>
+          <div>
+            <span>[</span>
+          </div>
+          {range.map((i) => {
+            if (dataElements[i] === undefined) {
+              console.log({ dataElements, shape })
+              throw new Error(`dataElements[${i}] is undefined`)
+            }
+            return (
+              <div key={i} style={{ marginLeft: `2ch` }}>
+                <ShapeLayout
+                  shape={shape.slice(1)}
+                  dataElements={dataElements[i] as NestedDataElementArray[]}
+                />
+              </div>
+            )
+          })}
+          <div>
+            <span>]</span>
+          </div>
+        </NoWrap>
       </div>
     )
   }

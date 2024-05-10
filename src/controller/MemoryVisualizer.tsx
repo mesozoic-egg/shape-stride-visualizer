@@ -21,7 +21,7 @@ export const MemoryVisualizer: React.FC<MemoryVisualizerProps> = ({
       <MemoryTitle />
       <Explanation />
       <Space size={20} />
-      <Card maxWidth={800} center>
+      <Card maxWidth={800}>
         <Flex justify="flex-start" wrap="wrap" gap="middle">
           {dataElementsNoGaps.map((element) => (
             <div key={element.address}>

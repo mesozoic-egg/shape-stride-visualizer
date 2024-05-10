@@ -15,7 +15,7 @@ export const ShapeVisualizer: React.FC<ShapeVisualizerProps> = ({
   return (
     <div>
       <ShapeVisualizerTitle />
-      <Card maxWidth={1800} margin={10} center>
+      <Card maxWidth={1800}>
         <TextAlign>
           <ErrorBoundary message={"Something went wrong"}>
             <ShapeLayout dataElements={dataElements} shape={shape} />
