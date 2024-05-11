@@ -1,5 +1,4 @@
 import { DataElement } from "../model/dataElement"
-import { fillGapInDataElements } from "../utils/constructDataElements"
 import { Button, Card, Flex, Space, Text, Title } from "../view/ui"
 
 interface MemoryVisualizerProps {
@@ -12,10 +11,6 @@ export const MemoryVisualizer: React.FC<MemoryVisualizerProps> = ({
   if (dataElements.length === 0) {
     return null
   }
-  const _dataElementsSorted = [...dataElements].sort(
-    (a, b) => a.address - b.address,
-  )
-  const dataElementsNoGaps = fillGapInDataElements(_dataElementsSorted)
   return (
     <div>
       <MemoryTitle />
@@ -23,7 +18,7 @@ export const MemoryVisualizer: React.FC<MemoryVisualizerProps> = ({
       <Space size={20} />
       <Card maxWidth={800}>
         <Flex justify="flex-start" wrap="wrap" gap="middle">
-          {dataElementsNoGaps.map((element) => (
+          {dataElements.map((element) => (
             <div key={element.address}>
               <Button
                 antType={element instanceof DataElement ? "default" : "text"}
