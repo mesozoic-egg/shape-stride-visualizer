@@ -11,8 +11,9 @@ import {
 import { ExprIdxVisualizer } from "./ExprIdxVisualizer"
 
 enum ROUTES {
-  SHAPE_STRIDE_VISUALIZER = "/shape-stride-visualizer",
-  EXPR_IDX_VISUALIZER = "/expr-idx-visualizer",
+  BASE = "/shape-stride-visualizer",
+  SHAPE_STRIDE_VISUALIZER = "/shape-stride",
+  EXPR_IDX_VISUALIZER = "/expr-idx",
 }
 
 const AppRoutes = () => {
@@ -38,7 +39,7 @@ const AppRoutes = () => {
 
 const MainAppRouter: React.FC<{}> = () => {
   return (
-    <Router>
+    <Router basename={ROUTES.BASE}>
       <AppRoutes />
       <Switch>
         <Route exact path="/">

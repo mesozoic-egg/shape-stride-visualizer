@@ -1,5 +1,5 @@
 import { DataElement } from "../model/dataElement"
-import { Button, Card, Flex, Space, Text, Title } from "../view/ui"
+import { Button, Card, Flex, Space, Title } from "../view/ui"
 
 interface MemoryVisualizerProps {
   dataElements: DataElement[]
