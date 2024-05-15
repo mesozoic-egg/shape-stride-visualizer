@@ -34,12 +34,3 @@ export const MemoryVisualizer: React.FC<MemoryVisualizerProps> = ({
 }
 
 const MemoryTitle = () => <Title level={2}>Memory layout</Title>
-const Explanation = () => (
-  <Text>
-    This is the memory layout of the elements. The 0x prefix means the number
-    that follows is a memory address. Those with border surrounding it are the
-    ones with values/data (those that will be referenced/shown in the shape
-    layout). Those without are empty memory location skipped over due to stride
-    set up.
-  </Text>
-)

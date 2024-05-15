@@ -1,7 +1,6 @@
 import { NestedDataElementArray } from "../model/dataElement"
 import { Card, TextAlign, Title } from "../view/ui"
 import { ShapeLayout } from "../view/ShapeLayout"
-import ErrorBoundary from "antd/es/alert/ErrorBoundary"
 
 interface ShapeVisualizerProps {
   dataElements: NestedDataElementArray

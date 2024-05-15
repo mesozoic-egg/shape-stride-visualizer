@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
-import { Variable, NumNode, Node } from "../model/variable"
+import { Variable, Node } from "../model/variable"
 import {
   constructDataElementsForVarVals,
   constructShapeLayoutAsVarVals,
@@ -8,7 +8,7 @@ import {
 } from "../utils/constructDataElements"
 import { DataElement, NestedDataElementArray } from "../model/dataElement"
 import { MemoryVisualizer } from "./MemoryVisualizer"
-import { Title, Text, NoWrap, Button, Space, Flex } from "../view/ui"
+import { Title, Text, NoWrap } from "../view/ui"
 import { ShapeVisualizer } from "./ShapeVisualizer"
 import { ObjectInputStrip } from "./ObjectsInputStrip"
 import { ExpressionInput } from "./ExpressionInput"

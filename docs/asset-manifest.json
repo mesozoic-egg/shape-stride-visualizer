@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/shape-stride-visualizer/static/css/main.c0e2d5c9.css",
-    "main.js": "/shape-stride-visualizer/static/js/main.c9af58f0.js",
+    "main.js": "/shape-stride-visualizer/static/js/main.651c0660.js",
     "static/js/453.d826ed3e.chunk.js": "/shape-stride-visualizer/static/js/453.d826ed3e.chunk.js",
     "index.html": "/shape-stride-visualizer/index.html",
     "main.c0e2d5c9.css.map": "/shape-stride-visualizer/static/css/main.c0e2d5c9.css.map",
-    "main.c9af58f0.js.map": "/shape-stride-visualizer/static/js/main.c9af58f0.js.map",
+    "main.651c0660.js.map": "/shape-stride-visualizer/static/js/main.651c0660.js.map",
     "453.d826ed3e.chunk.js.map": "/shape-stride-visualizer/static/js/453.d826ed3e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.c0e2d5c9.css",
-    "static/js/main.c9af58f0.js"
+    "static/js/main.651c0660.js"
   ]
 }
