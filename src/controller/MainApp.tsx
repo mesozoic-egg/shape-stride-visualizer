@@ -2,12 +2,7 @@ import { Canvas, Flex, Space, Title } from "../view/ui"
 import { ShapeStrideVisualizer } from "./ShapeStrideVisualizer"
 import { Link as LinkRoute } from "./Routes"
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from "react-router-dom"
+import { HashRouter as Router, Switch, Route, Redirect } from "react-router-dom"
 import { ExprIdxVisualizer } from "./ExprIdxVisualizer"
 
 enum ROUTES {
@@ -39,7 +34,7 @@ const AppRoutes = () => {
 
 const MainAppRouter: React.FC<{}> = () => {
   return (
-    <Router basename={ROUTES.BASE}>
+    <Router>
       <AppRoutes />
       <Switch>
         <Route exact path="/">
