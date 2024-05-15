@@ -14,7 +14,6 @@ export const MemoryVisualizer: React.FC<MemoryVisualizerProps> = ({
   return (
     <div>
       <MemoryTitle />
-      <Explanation />
       <Space size={20} />
       <Card maxWidth={800}>
         <Flex justify="flex-start" wrap="wrap" gap="middle">

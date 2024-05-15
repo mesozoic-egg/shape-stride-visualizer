@@ -13,7 +13,7 @@ export const ShapeStrideVisualizer: React.FC<{}> = () => {
   const [shapeStrides, setShapeStrides] = useState<number[][]>([[], []])
   const [memoryLayout, setMemoryLayout] = useState<DataElement[]>([])
   const [shapeLayout, setShapeLayout] = useState<
-    [NestedDataElementArray[], number[]]
+    [NestedDataElementArray, number[]]
   >([[], []])
   useEffect(() => {
     if (

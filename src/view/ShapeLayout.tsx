@@ -3,13 +3,13 @@ import { NestedDataElementArray } from "../model/dataElement"
 
 interface ShapeLayoutProps {
   shape: number[]
-  dataElements: NestedDataElementArray[]
+  dataElements: NestedDataElementArray
 }
 export const ShapeLayout: React.FC<ShapeLayoutProps> = ({
   shape,
   dataElements,
 }) => {
-  if (shape.length === 0 || dataElements.length === 0) {
+  if (shape.length === 0) {
     return null
   }
   if (shape.length === 1) {
@@ -36,7 +36,7 @@ export const ShapeLayout: React.FC<ShapeLayoutProps> = ({
           </div>
           {range.map((i) => {
             if (dataElements[i] === undefined) {
-              console.log({ dataElements, shape })
+              console.error({ dataElements, shape })
               throw new Error(`dataElements[${i}] is undefined`)
             }
             return (

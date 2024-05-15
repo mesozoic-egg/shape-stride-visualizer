@@ -1,4 +1,4 @@
-export type NestedDataElementArray = DataElement | NestedDataElementArray[]
+export type NestedDataElementArray = (DataElement | NestedDataElementArray)[]
 export class MemorySlot {
   constructor(public address: number) {}
 

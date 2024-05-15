@@ -1,17 +1,9 @@
 import { useEffect, useState, useCallback } from "react"
 import { ShapeStride } from "../model/shape"
-import {
-  Button,
-  Card,
-  Flex,
-  InputNumber,
-  Space,
-  Text,
-  TextAlign,
-  Title,
-} from "../view/ui"
+import { Button, Card, Flex, Space, Text, TextAlign, Title } from "../view/ui"
 import { ShapeStrideValidator } from "../utils/validateShapeStrides"
 import { DeleteOutlined, PlusOutlined } from "../view/icons"
+import { InputBox } from "./InputBox"
 
 interface ShapeStrideInputProps {
   onConfirmShapeStrides: (shapeStrides: number[][]) => void
@@ -115,42 +107,6 @@ export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
         </Button>
       </Flex>
       {errorMsg && <Text type="danger">Error: {errorMsg}</Text>}
-    </div>
-  )
-}
-
-interface InputBoxProps {
-  label: string
-  onValueConfirm: (id: number, value: number) => void
-  id: number
-  prefilled?: string | number
-}
-const InputBox: React.FC<InputBoxProps> = ({
-  prefilled = "",
-  label,
-  onValueConfirm,
-  id,
-}) => {
-  const [value, setValue] = useState<string | number>(prefilled)
-  const [errorMsg, setErrorMsg] = useState<string | undefined>()
-  useEffect(() => {
-    if (value !== undefined && !isNaN(Number(value))) {
-      setErrorMsg(undefined)
-      onValueConfirm(id, Number(value))
-    } else {
-      setErrorMsg("Enter an integer")
-    }
-  }, [id, value, onValueConfirm])
-  return (
-    <div>
-      <label>{label}</label>
-      <br />
-      <InputNumber
-        width={60}
-        value={value as any}
-        onChange={(e) => setValue(e.target.value)}
-      />
-      {errorMsg && <div style={{ color: "red" }}>{errorMsg}</div>}
     </div>
   )
 }

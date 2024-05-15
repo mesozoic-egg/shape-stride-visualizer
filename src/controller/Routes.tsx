@@ -1,6 +1,5 @@
 import React from "react"
 import { Link as LinkRR } from "react-router-dom"
-import { Link as LinkUI } from "../view/ui"
 
 interface LinkProps {
   to: string

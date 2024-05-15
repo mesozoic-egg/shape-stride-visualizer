@@ -1,4 +1,4 @@
-import { Canvas, Flex, Link, Space, Title, Text } from "../view/ui"
+import { Canvas, Flex, Space, Title } from "../view/ui"
 import { ShapeStrideVisualizer } from "./ShapeStrideVisualizer"
 import { Link as LinkRoute } from "./Routes"
 

@@ -3,6 +3,7 @@ import {
   MemorySlot,
   NestedDataElementArray,
 } from "../model/dataElement"
+import { Variable, Node, VarVals, NumNode } from "../model/variable"
 
 const START = 0
 interface ConstructDataElementsArgs {
@@ -71,9 +72,153 @@ export const arrangeIntoShape = ({
     return elements
   }
   try {
-    return fill(shape, stride, START)
+    return fill(shape, stride, START) as NestedDataElementArray
   } catch (e) {
     console.error(e)
     return []
   }
+}
+
+interface ConstructVarValsForShapeArgs {
+  shape: Variable[]
+}
+export const constructVarValsForShape = ({
+  shape,
+}: ConstructVarValsForShapeArgs) => {
+  const varValsArray: VarVals[] = []
+  let elementIdx = 0
+  const constructVarValsArray = (idxs: number[], shapeIdx: number) => {
+    if (shapeIdx === shape.length - 1) {
+      for (let i = shape[shapeIdx].min; i <= shape[shapeIdx].max; i++) {
+        const varVals: VarVals = new Map()
+        let _elementIdx = elementIdx
+        idxs.forEach((idx, i) => {
+          _elementIdx += idx
+          varVals.set(shape[i].name, new NumNode(idx))
+        })
+        varVals.set(shape[shapeIdx].name, new NumNode(i))
+        varValsArray[_elementIdx + i] = varVals
+      }
+      return
+    }
+
+    for (let i = shape[0].min; i <= shape[0].max; i++) {
+      constructVarValsArray([...idxs, i], shapeIdx + 1)
+      elementIdx += shape[1].max - shape[1].min
+    }
+  }
+  constructVarValsArray([], 0)
+  return varValsArray
+}
+
+interface ConstructDataElementsForVarValsArgs {
+  varValsArray: VarVals[]
+  expression: Node
+}
+export const constructDataElementsForVarVals = ({
+  varValsArray,
+  expression,
+}: ConstructDataElementsForVarValsArgs) => {
+  const dataElements: DataElements = []
+  varValsArray.forEach((varVals, i) => {
+    const varValSubbed = expression.substitute(varVals)
+    if (!(varValSubbed instanceof NumNode)) {
+      throw new Error("Expression not evaluated to NumNode")
+    }
+    const address = varValSubbed.value
+    dataElements[address] = new DataElement(address)
+  })
+  for (let i = 0; i < dataElements.length; i++) {
+    if (!dataElements[i]) {
+      dataElements[i] = new MemorySlot(i)
+    }
+  }
+  return dataElements
+}
+
+interface ConstructExpressionArgs {
+  shape: Variable[]
+  stride: number[]
+}
+export const constructExpression = ({
+  shape,
+  stride,
+}: ConstructExpressionArgs) => {
+  let expression: Node = new NumNode(0)
+  for (let i = 0; i < shape.length; i++) {
+    expression = expression.add(shape[i].mul(new NumNode(stride[i])))
+  }
+  return expression
+}
+
+export type NestedVarVals = (VarVals | NestedVarVals)[]
+interface ConstructShapeLayoutAsVarValsArgs {
+  shape: Variable[]
+}
+export const constructShapeLayoutAsVarVals = ({
+  shape,
+}: ConstructShapeLayoutAsVarValsArgs) => {
+  const constructVarValsArray = (idxs: number[], shapeIdx: number) => {
+    const _varValsArray: NestedVarVals = []
+    if (shapeIdx === shape.length - 1) {
+      for (let i = shape[shapeIdx].min; i <= shape[shapeIdx].max; i++) {
+        const varVals: VarVals = new Map()
+        idxs.forEach((idx, i) => {
+          varVals.set(shape[i].name, new NumNode(idx))
+        })
+        varVals.set(shape[shapeIdx].name, new NumNode(i))
+        _varValsArray[i] = varVals
+      }
+      return _varValsArray
+    }
+    for (let i = shape[0].min; i <= shape[0].max; i++) {
+      const nested = constructVarValsArray([...idxs, i], shapeIdx + 1)
+      _varValsArray.push(nested)
+    }
+    return _varValsArray
+  }
+  const varValsArray = constructVarValsArray([], 0)
+  return varValsArray
+}
+
+interface SubstituteVarValsShapeLayoutArgs {
+  dataElements: DataElement[]
+  shapeLayout: NestedVarVals
+  expression: Node
+}
+export const substituteVarValsShapeLayout = ({
+  dataElements,
+  shapeLayout,
+  expression,
+}: SubstituteVarValsShapeLayoutArgs) => {
+  const fill = (
+    _layout: (NestedVarVals | VarVals)[],
+    _expression: Node,
+  ): NestedDataElementArray | DataElement => {
+    const filled: NestedDataElementArray = []
+    if (_layout?.length) {
+      for (const nested of _layout) {
+        const _filled = fill(nested as NestedVarVals, _expression)
+        filled.push(_filled)
+      }
+      return filled
+    }
+    if (!(_layout instanceof Map)) {
+      throw new Error("Last dimension of shapelayout isn't consisted of Maps")
+    }
+    const varVals = _layout as VarVals
+    const varValsSubbed = _expression.substitute(varVals)
+    if (!(varValsSubbed instanceof NumNode)) {
+      throw new Error("Expression not evaluated to NumNode")
+    }
+    const address = varValsSubbed.value
+    const element = dataElements[address]
+    if (!element) {
+      throw new Error(
+        `Data elements array did not contain corresponding element at address ${address}`,
+      )
+    }
+    return element
+  }
+  return fill(shapeLayout, expression) as NestedDataElementArray
 }

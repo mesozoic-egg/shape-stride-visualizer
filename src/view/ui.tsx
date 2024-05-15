@@ -4,6 +4,7 @@ import {
   Card as CardAnt,
   InputNumber as InputNumberAnt,
   Typography,
+  Input as InputAnt,
 } from "antd"
 import React from "react"
 
@@ -130,9 +131,20 @@ export const Title: React.FC<TitleProps> = ({ level, children }) => {
 
 interface TextProps extends WithChildren {
   type?: "secondary" | "success" | "warning" | "danger"
+  strong?: boolean
+  italic?: boolean
 }
-export const Text: React.FC<TextProps> = ({ type, children }) => {
-  return <TextAnt type={type}>{children}</TextAnt>
+export const Text: React.FC<TextProps> = ({
+  type,
+  children,
+  strong,
+  italic,
+}) => {
+  return (
+    <TextAnt type={type} strong={strong} italic={italic}>
+      {children}
+    </TextAnt>
+  )
 }
 
 interface SpaceProps extends WithChildren {
@@ -210,4 +222,29 @@ export const TextAlign: React.FC<TextAlignProps> = ({ align, children }) => {
 
 export const NoWrap: React.FC<WithChildren> = ({ children }) => {
   return <div style={{ whiteSpace: "nowrap" }}>{children}</div>
+}
+
+interface InputProps {
+  value: string
+  onChange: (value: { target: { value: string } }) => void
+  size?: "large" | "middle" | "small"
+  placeholder?: string
+  prefix?: React.ReactNode
+}
+export const Input: React.FC<InputProps> = ({
+  value,
+  onChange,
+  size,
+  placeholder,
+  prefix,
+}) => {
+  return (
+    <InputAnt
+      prefix={prefix}
+      value={value}
+      onChange={(e) => onChange(e)}
+      size={size}
+      placeholder={placeholder}
+    />
+  )
 }
