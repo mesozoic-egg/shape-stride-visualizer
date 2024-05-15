@@ -9,7 +9,7 @@ interface ExpressionInputProps {
   validate: (str: string) => [boolean, string]
   placeholder?: string
 }
-enum EXAMPLES {
+export enum EXAMPLES {
   SIMPLE = "idx0 * 2 + idx1",
   COMPLEX = "((((((idx0 * 2) % 3) + idx1) % 3) * 3) + ((((idx0 * 2) + idx1) // 3) * 3))",
 }
@@ -42,6 +42,8 @@ export const ExpressionInput: React.FC<ExpressionInputProps> = ({
           setTyped(e.target.value)
         }}
         placeholder={placeholder}
+        allowClear
+        maxWidth={800}
       />
       <br />
       {errMsg && <Text type="danger">Error: {errMsg}</Text>}

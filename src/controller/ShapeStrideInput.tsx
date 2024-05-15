@@ -13,7 +13,7 @@ interface ShapeStrideInputProps {
 export const ShapeStrideInput: React.FC<ShapeStrideInputProps> = ({
   onConfirmShapeStrides,
   validateShapeStrides = () => undefined,
-  initialShapeStrides = [new ShapeStride(2, 3, 0), new ShapeStride(3, 1, 1)],
+  initialShapeStrides = [new ShapeStride(2, 3, 0), new ShapeStride(3, 3, 1)],
 }) => {
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
   const [count, setCount] = useState<number>(3)

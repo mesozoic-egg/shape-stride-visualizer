@@ -230,6 +230,8 @@ interface InputProps {
   size?: "large" | "middle" | "small"
   placeholder?: string
   prefix?: React.ReactNode
+  allowClear?: boolean
+  maxWidth?: number
 }
 export const Input: React.FC<InputProps> = ({
   value,
@@ -237,14 +239,20 @@ export const Input: React.FC<InputProps> = ({
   size,
   placeholder,
   prefix,
+  allowClear,
+  maxWidth,
 }) => {
   return (
     <InputAnt
+      allowClear={allowClear}
       prefix={prefix}
       value={value}
       onChange={(e) => onChange(e)}
       size={size}
       placeholder={placeholder}
+      style={{
+        maxWidth: maxWidth,
+      }}
     />
   )
 }

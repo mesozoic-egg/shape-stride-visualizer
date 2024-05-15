@@ -11,7 +11,7 @@ import { MemoryVisualizer } from "./MemoryVisualizer"
 import { Title, Text, NoWrap } from "../view/ui"
 import { ShapeVisualizer } from "./ShapeVisualizer"
 import { ObjectInputStrip } from "./ObjectsInputStrip"
-import { ExpressionInput } from "./ExpressionInput"
+import { ExpressionInput, EXAMPLES } from "./ExpressionInput"
 import { parse, validateExpressionInput } from "../utils/exprParser"
 
 interface VariableInterface {
@@ -27,7 +27,7 @@ const attributesValidator = {
   min: (s: string | number) => /^\d+$/.test(s.toString()),
   max: (s: string | number) => /^\d+$/.test(s.toString()),
 }
-const constructor = (id: number) => {
+const constructor = (id: number, opt?: { min?: number; max?: number }) => {
   return {
     id,
     attributes: [
@@ -37,11 +37,11 @@ const constructor = (id: number) => {
       },
       {
         key: "min",
-        value: 0,
+        value: opt?.min ?? 0,
       },
       {
         key: "max",
-        value: 1,
+        value: opt?.max ?? 1,
       },
     ],
   }
@@ -52,7 +52,10 @@ export const ExprIdxVisualizer = () => {
   const [variableNodes, setVariableNodes] = useState<Variable[]>([])
   const [variablesMap, setVariableMap] = useState<Record<string, Variable>>({})
   const initializer = useCallback(() => {
-    return [constructor(0), constructor(1)]
+    return [
+      constructor(0, { min: 0, max: 2 }),
+      constructor(1, { min: 0, max: 1 }),
+    ]
   }, [])
   useEffect(() => {
     if (variables.length) {
@@ -164,6 +167,7 @@ export const ExprIdxVisualizer = () => {
         }}
         validate={() => [true, ""]}
         placeholder="Type your expression with the variables intiialized above or click on the example button to fill automatically"
+        prefilled={EXAMPLES.COMPLEX}
       />
       {err && (
         <div>
