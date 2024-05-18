@@ -9,7 +9,7 @@ import {
   DivNode,
 } from "../model/variable"
 const MAX_PARENTHESES_DEPTH = 80
-const MAX_EVALUATE_LOOP_LIMIT = 30
+const MAX_EVALUATE_LOOP_LIMIT = 80
 const MAX_EVALUATE_RECURSE_DEPTH = 30
 const MAX_LOOP_RECURSE_LIMIT = 30
 interface ParseArgs {
@@ -110,7 +110,13 @@ const evaluateExpression = ({
         variables,
         recurseDepth: recurseDepth + 1,
       })
-      stack.push(node)
+
+      if (currentOperator) {
+        pushNodeToStack(stack, node, currentOperator)
+        currentOperator = ""
+      } else {
+        stack.push(node)
+      }
       i = end + 1
     } else if (char && /[a-zA-Z]/.test(char)) {
       let end = i
@@ -139,6 +145,7 @@ const evaluateExpression = ({
       break
     }
   }
+  console.log({ stack })
   if (stack.length > 1) {
     if (!currentOperator) {
       console.error({ stack, currentOperator })
