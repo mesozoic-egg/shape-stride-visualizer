@@ -13,7 +13,7 @@ import { ShapeVisualizer } from "./ShapeVisualizer"
 import { ObjectInputStrip } from "./ObjectsInputStrip"
 import { ExpressionInput, EXAMPLES } from "./ExpressionInput"
 import { parse, validateExpressionInput } from "../utils/exprParser"
-
+import { ErrorBoundary } from "../view/ErrorBoundary"
 interface VariableInterface {
   id: number
   attributes: {

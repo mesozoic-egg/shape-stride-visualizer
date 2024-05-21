@@ -1,12 +1,15 @@
 import React from "react"
+import { Text } from "./ui"
 
 interface ErrorBoundaryProps {
-  fallback: React.ReactNode
   children: React.ReactNode
+  hasError: boolean
+  setHasError: (arg: boolean) => void
 }
 
 interface ErrorBoundaryState {
   hasError: boolean
+  errMsg?: string
 }
 
 export class ErrorBoundary extends React.Component<
@@ -20,21 +23,23 @@ export class ErrorBoundary extends React.Component<
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     // Update state so the next render will show the fallback UI.
-    return { hasError: true }
+    return { hasError: true, errMsg: error.message }
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
-    // Example "componentStack":
-    //   in ComponentThatThrows (created by App)
-    //   in ErrorBoundary (created by App)
-    //   in div (created by App)
-    //   in App
+    this.props.setHasError(true)
+  }
+
+  componentDidUpdate(prevProps: ErrorBoundaryProps) {
+    if (prevProps.hasError && !this.props.hasError) {
+      this.setState({ hasError: false, errMsg: undefined })
+    }
   }
 
   render() {
     if (this.state.hasError) {
       // You can render any custom fallback UI
-      return this.props.fallback
+      return <Text>Something went wrong: {this.state.errMsg}</Text>
     }
 
     return this.props.children

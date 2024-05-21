@@ -145,7 +145,6 @@ const evaluateExpression = ({
       break
     }
   }
-  console.log({ stack })
   if (stack.length > 1) {
     if (!currentOperator) {
       console.error({ stack, currentOperator })
