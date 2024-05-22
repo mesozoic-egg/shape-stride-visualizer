@@ -103,11 +103,13 @@ interface InputNumberProps {
   width?: number
   value: any
   onChange?: (event: eventWithTargetValue) => void
+  disabled?: boolean
 }
 export const InputNumber: React.FC<InputNumberProps> = ({
   value,
   onChange,
   width,
+  disabled,
 }) => {
   return (
     <InputNumberAnt
@@ -118,6 +120,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({
       onChange={(value) => {
         onChange?.({ target: { value } })
       }}
+      disabled={disabled}
     />
   )
 }

@@ -7,6 +7,7 @@ interface InputBoxProps {
   id: number
   prefilled?: string | number
   validator: (value: string | number) => boolean
+  disabled?: boolean
 }
 export const InputBox: React.FC<InputBoxProps> = ({
   prefilled = "",
@@ -14,6 +15,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
   onValueConfirm,
   id,
   validator,
+  disabled,
 }) => {
   const [value, setValue] = useState<string | number>(prefilled)
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
@@ -35,6 +37,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
         onChange={(e) => {
           setValue(e.target.value)
         }}
+        disabled={disabled}
       />
       {errorMsg && <div style={{ color: "red" }}>{errorMsg}</div>}
     </div>

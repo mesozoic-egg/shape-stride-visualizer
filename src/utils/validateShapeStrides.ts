@@ -1,3 +1,5 @@
+import { NestedDataElementArray } from "../model/dataElement"
+
 class ShapeStrideValidatorError {
   constructor(public message: string) {}
 }
@@ -44,3 +46,45 @@ export const checkCompatibleShapeStrides: CheckCompatibleShapeStrides =
   }
 
 const prod = (val: number[]) => val.reduce((acc, curr) => acc * curr, 1)
+
+interface ShapeLayoutProps {
+  shape: number[]
+  dataElements: NestedDataElementArray
+}
+type NestedStringArray = (string | NestedStringArray)[]
+export const validateShapeLayout = ({
+  shape,
+  dataElements,
+}: ShapeLayoutProps): [boolean, string] => {
+  const recurse = ({
+    shape,
+    dataElements,
+  }: ShapeLayoutProps): NestedStringArray => {
+    if (shape.length === 0) {
+      throw new Error("Shape must be bigger than zero")
+    }
+    if (shape.length === 1) {
+      return dataElements.map((element, i) => element.toString())
+    } else {
+      const range = Array.from({ length: shape[0] }, (_, i) => i)
+      return range.map((i) => {
+        if (dataElements[i] === undefined) {
+          throw new Error(`Data element at index ${i} is undefined`)
+        }
+        return recurse({
+          shape: shape.slice(1),
+          dataElements: dataElements[i] as NestedDataElementArray,
+        })
+      })
+    }
+  }
+  try {
+    recurse({ shape, dataElements })
+    return [true, ""]
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return [false, e.message]
+    }
+    return [false, "unknown error object"]
+  }
+}

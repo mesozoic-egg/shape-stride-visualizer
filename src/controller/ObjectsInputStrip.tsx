@@ -6,6 +6,7 @@ import { InputBox } from "./InputBoxGeneric"
 interface Attribute {
   key: string
   value: string | number
+  disabled?: boolean
 }
 interface GenericObjectInterface {
   id: number
@@ -116,6 +117,7 @@ export const ObjectInputStrip = <
                       onValueConfirm={setObjectValue(_object.id, attr.key)}
                       prefilled={attr.value}
                       validator={validator}
+                      disabled={attr.disabled}
                     />
                   )
                 })}

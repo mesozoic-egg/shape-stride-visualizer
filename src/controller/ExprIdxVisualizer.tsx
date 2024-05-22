@@ -13,11 +13,13 @@ import { ShapeVisualizer } from "./ShapeVisualizer"
 import { ObjectInputStrip } from "./ObjectsInputStrip"
 import { ExpressionInput, EXAMPLES } from "./ExpressionInput"
 import { parse, validateExpressionInput } from "../utils/exprParser"
+import { validateShapeLayout } from "../utils/validateShapeStrides"
 interface VariableInterface {
   id: number
   attributes: {
     key: string
     value: string | number
+    disabled?: boolean
   }[]
 }
 
@@ -37,6 +39,7 @@ const constructor = (id: number, opt?: { min?: number; max?: number }) => {
       {
         key: "min",
         value: opt?.min ?? 0,
+        disabled: true,
       },
       {
         key: "max",
@@ -58,6 +61,7 @@ export const ExprIdxVisualizer = () => {
   const [typed, setTyped] = useState("")
   const [expression, setExpression] = useState<Node>()
   const [err, setErr] = useState("")
+  const [renderLayoutErr, setRenderLayoutErr] = useState("")
   const [dataElements, setDataElements] = useState<DataElement[]>()
   const [layoutDataObject, setLayoutDataObject] = useState<{
     layout: NestedDataElementArray
@@ -133,10 +137,22 @@ export const ExprIdxVisualizer = () => {
             shapeLayout: varValsShape,
             expression,
           })
-          setDataElements(_dataElements)
-          setLayoutDataObject({ layout: dataElementsLayout, shape: shapeAsNum })
-          setExpression(_expression)
-          setVariableNodes(variableNodes)
+          const [valid, errMsg] = validateShapeLayout({
+            shape: shapeAsNum,
+            dataElements: dataElementsLayout,
+          })
+          if (valid) {
+            setRenderLayoutErr("")
+            setDataElements(_dataElements)
+            setLayoutDataObject({
+              layout: dataElementsLayout,
+              shape: shapeAsNum,
+            })
+            setExpression(_expression)
+            setVariableNodes(variableNodes)
+          } else {
+            setRenderLayoutErr(errMsg)
+          }
         } catch (e: unknown) {
           if (e instanceof Error) {
             setErr(e.message)
@@ -185,6 +201,13 @@ export const ExprIdxVisualizer = () => {
             {expression.render()}
           </Text>
         </NoWrap>
+      )}
+      {renderLayoutErr && (
+        <div>
+          <Text strong type="danger">
+            {renderLayoutErr}
+          </Text>
+        </div>
       )}
       {dataElements && <MemoryVisualizer dataElements={dataElements} />}
       {layoutDataObject && layoutDataObject?.layout?.length !== 0 && (
