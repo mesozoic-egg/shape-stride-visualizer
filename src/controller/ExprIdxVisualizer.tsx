@@ -13,7 +13,6 @@ import { ShapeVisualizer } from "./ShapeVisualizer"
 import { ObjectInputStrip } from "./ObjectsInputStrip"
 import { ExpressionInput, EXAMPLES } from "./ExpressionInput"
 import { parse, validateExpressionInput } from "../utils/exprParser"
-import { ErrorBoundary } from "../view/ErrorBoundary"
 interface VariableInterface {
   id: number
   attributes: {
@@ -50,15 +49,27 @@ const constructor = (id: number, opt?: { min?: number; max?: number }) => {
 export const ExprIdxVisualizer = () => {
   const [variables, setVariables] = useState<VariableInterface[]>([])
   const [variableNodes, setVariableNodes] = useState<Variable[]>([])
-  const [variablesMap, setVariableMap] = useState<Record<string, Variable>>({})
   const initializer = useCallback(() => {
     return [
       constructor(0, { min: 0, max: 2 }),
       constructor(1, { min: 0, max: 1 }),
     ]
   }, [])
+  const [typed, setTyped] = useState("")
+  const [expression, setExpression] = useState<Node>()
+  const [err, setErr] = useState("")
+  const [dataElements, setDataElements] = useState<DataElement[]>()
+  const [layoutDataObject, setLayoutDataObject] = useState<{
+    layout: NestedDataElementArray
+    shape: number[]
+  }>()
+  const resetComputed = useCallback(() => {
+    setDataElements([])
+    setLayoutDataObject(undefined)
+  }, [])
   useEffect(() => {
     if (variables.length) {
+      resetComputed()
       const vars = variables.map((v) => {
         const _name = v.attributes.find((a) => a.key === "name")?.value
         const _min = v.attributes.find((a) => a.key === "min")?.value
@@ -75,76 +86,66 @@ export const ExprIdxVisualizer = () => {
         }
         return new Variable(name.toString(), min, max)
       })
-      setLayout([])
-      setDataElements([])
-      setVariableNodes(vars)
-      setShape(vars.map((v) => v.max + 1))
-      setVariableMap(
-        vars.reduce(
-          (acc, v) => {
-            acc[v.name] = v
-            return acc
-          },
-          {} as Record<string, Variable>,
-        ),
+      const variableNodes = vars
+      const variablesMap = variableNodes.reduce(
+        (acc, v) => {
+          acc[v.name] = v
+          return acc
+        },
+        {} as Record<string, Variable>,
       )
-    }
-  }, [variables])
-  const [typed, setTyped] = useState("")
-  const [expression, setExpression] = useState<Node>()
-  const [err, setErr] = useState("")
-  useEffect(() => {
-    if (typed) {
-      const [valid, _err] = validateExpressionInput({
-        expression: typed,
-        variables: variablesMap,
-      })
-      if (!valid) {
-        setErr(_err)
-        return
-      }
-      setErr("")
-      try {
-        const variableMap = variableNodes.reduce(
-          (acc, v) => {
-            acc[v.name] = v
-            return acc
-          },
-          {} as Record<string, Variable>,
-        )
-        const _expression = parse({ expression: typed, variables: variableMap })
-        setExpression(_expression)
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          setErr(e.message)
+      if (typed) {
+        resetComputed()
+        const [valid, _err] = validateExpressionInput({
+          expression: typed,
+          variables: variablesMap,
+        })
+        if (!valid) {
+          setErr(_err)
+          return
+        }
+        setErr("")
+        try {
+          const variableMap = variableNodes.reduce(
+            (acc, v) => {
+              acc[v.name] = v
+              return acc
+            },
+            {} as Record<string, Variable>,
+          )
+          const _expression = parse({
+            expression: typed,
+            variables: variableMap,
+          })
+          const expression = _expression
+          const shape = variableNodes
+          const shapeAsNum = variableNodes.map((v) => v.max + 1)
+          const varValsArray = constructVarValsForShape({
+            shape,
+          })
+          const _dataElements = constructDataElementsForVarVals({
+            varValsArray,
+            expression,
+          })
+          const varValsShape = constructShapeLayoutAsVarVals({ shape })
+          const dataElementsLayout = substituteVarValsShapeLayout({
+            dataElements: _dataElements,
+            shapeLayout: varValsShape,
+            expression,
+          })
+          setDataElements(_dataElements)
+          setLayoutDataObject({ layout: dataElementsLayout, shape: shapeAsNum })
+          setExpression(_expression)
+          setVariableNodes(variableNodes)
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            setErr(e.message)
+          }
         }
       }
     }
-  }, [typed, variableNodes, variablesMap])
+  }, [variables, resetComputed, typed])
 
-  const [dataElements, setDataElements] = useState<DataElement[]>()
-  const [layout, setLayout] = useState<NestedDataElementArray>([])
-  const [shape, setShape] = useState<number[]>([])
-  useEffect(() => {
-    if (expression) {
-      const shape = variableNodes
-      const varValsArray = constructVarValsForShape({
-        shape,
-      })
-      const _dataElements = constructDataElementsForVarVals({
-        varValsArray,
-        expression,
-      })
-      const varValsShape = constructShapeLayoutAsVarVals({ shape })
-      const dataElementsLayout = substituteVarValsShapeLayout({
-        dataElements: _dataElements,
-        shapeLayout: varValsShape,
-        expression,
-      })
-      setDataElements(_dataElements)
-      setLayout(dataElementsLayout)
-    }
-  }, [expression, variableNodes])
   return (
     <div>
       <Title level={2}>Initialize shape variables</Title>
@@ -186,8 +187,11 @@ export const ExprIdxVisualizer = () => {
         </NoWrap>
       )}
       {dataElements && <MemoryVisualizer dataElements={dataElements} />}
-      {layout.length !== 0 && (
-        <ShapeVisualizer dataElements={layout} shape={shape} />
+      {layoutDataObject && layoutDataObject?.layout?.length !== 0 && (
+        <ShapeVisualizer
+          dataElements={layoutDataObject.layout}
+          shape={layoutDataObject.shape}
+        />
       )}
     </div>
   )
