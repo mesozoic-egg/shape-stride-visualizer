@@ -141,9 +141,10 @@ export const ExprIdxVisualizer = () => {
             shape: shapeAsNum,
             dataElements: dataElementsLayout,
           })
+          setDataElements(_dataElements)
           if (valid) {
             setRenderLayoutErr("")
-            setDataElements(_dataElements)
+
             setLayoutDataObject({
               layout: dataElementsLayout,
               shape: shapeAsNum,
