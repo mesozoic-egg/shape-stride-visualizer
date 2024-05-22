@@ -17,10 +17,15 @@ export const InputBox: React.FC<InputBoxProps> = ({
   validator,
   disabled,
 }) => {
-  const [value, setValue] = useState<string | number>(prefilled)
+  const [value, setValue] = useState<unknown>(prefilled)
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
   useEffect(() => {
-    if (value !== undefined && validator(value)) {
+    if (
+      value !== undefined &&
+      value !== null &&
+      (typeof value === "string" || typeof value === "number") &&
+      validator(value)
+    ) {
       setErrorMsg(undefined)
       onValueConfirm(value)
     } else {

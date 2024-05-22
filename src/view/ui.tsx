@@ -96,7 +96,7 @@ export const Card: React.FC<CardProps> = ({
 
 type eventWithTargetValue = {
   target: {
-    value: any
+    value: unknown
   }
 }
 interface InputNumberProps {

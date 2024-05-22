@@ -72,7 +72,6 @@ export const ExprIdxVisualizer = () => {
     setLayoutDataObject(undefined)
   }, [])
   useEffect(() => {
-    console.log("variable update", variables)
     if (variables.length) {
       resetComputed()
       const vars = variables.map((v) => {

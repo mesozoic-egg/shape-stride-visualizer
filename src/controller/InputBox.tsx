@@ -13,7 +13,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
   onValueConfirm,
   id,
 }) => {
-  const [value, setValue] = useState<string | number>(prefilled)
+  const [value, setValue] = useState<unknown>(prefilled)
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
   useEffect(() => {
     if (value !== undefined && !isNaN(Number(value))) {
