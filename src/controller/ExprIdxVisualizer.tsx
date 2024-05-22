@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
-import { Variable, Node } from "../model/variable"
+import { Variable, Node, NumNode } from "../model/variable"
 import {
   constructDataElementsForVarVals,
   constructShapeLayoutAsVarVals,
@@ -72,6 +72,7 @@ export const ExprIdxVisualizer = () => {
     setLayoutDataObject(undefined)
   }, [])
   useEffect(() => {
+    console.log("variable update", variables)
     if (variables.length) {
       resetComputed()
       const vars = variables.map((v) => {

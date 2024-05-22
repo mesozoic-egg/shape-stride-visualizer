@@ -90,37 +90,97 @@ describe("construct elements and arrange", () => {
 })
 
 describe("construct var vals for shape", () => {
-  it("simple case", () => {
-    const idx0 = new Variable("idx0", 0, 2)
-    const idx1 = new Variable("idx1", 0, 1)
-    const shape = [idx0, idx1]
+  test.each([
+    [
+      [new Variable("idx0", 0, 2), new Variable("idx1", 0, 1)],
+      [
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(1)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(1)],
+          ["idx1", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(1)],
+          ["idx1", new NumNode(1)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(2)],
+          ["idx1", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(2)],
+          ["idx1", new NumNode(1)],
+        ]),
+      ],
+    ],
+    [
+      [
+        new Variable("idx0", 0, 0),
+        new Variable("idx1", 0, 0),
+        new Variable("idx2", 0, 3),
+        new Variable("idx3", 0, 1),
+      ],
+      [
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(0)],
+          ["idx3", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(0)],
+          ["idx3", new NumNode(1)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(1)],
+          ["idx3", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(1)],
+          ["idx3", new NumNode(1)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(2)],
+          ["idx3", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(2)],
+          ["idx3", new NumNode(1)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(3)],
+          ["idx3", new NumNode(0)],
+        ]),
+        new Map([
+          ["idx0", new NumNode(0)],
+          ["idx1", new NumNode(0)],
+          ["idx2", new NumNode(3)],
+          ["idx3", new NumNode(1)],
+        ]),
+      ],
+    ],
+  ])("test %s", (shape, expected) => {
     const varValsArray = constructVarValsForShape({ shape })
-    expect(varValsArray).toEqual([
-      new Map([
-        ["idx0", new NumNode(0)],
-        ["idx1", new NumNode(0)],
-      ]),
-      new Map([
-        ["idx0", new NumNode(0)],
-        ["idx1", new NumNode(1)],
-      ]),
-      new Map([
-        ["idx0", new NumNode(1)],
-        ["idx1", new NumNode(0)],
-      ]),
-      new Map([
-        ["idx0", new NumNode(1)],
-        ["idx1", new NumNode(1)],
-      ]),
-      new Map([
-        ["idx0", new NumNode(2)],
-        ["idx1", new NumNode(0)],
-      ]),
-      new Map([
-        ["idx0", new NumNode(2)],
-        ["idx1", new NumNode(1)],
-      ]),
-    ])
+    expect(varValsArray).toEqual(expected)
   })
 })
 

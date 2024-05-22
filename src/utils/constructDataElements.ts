@@ -91,20 +91,17 @@ export const constructVarValsForShape = ({
     if (shapeIdx === shape.length - 1) {
       for (let i = shape[shapeIdx].min; i <= shape[shapeIdx].max; i++) {
         const varVals: VarVals = new Map()
-        let _elementIdx = elementIdx
         idxs.forEach((idx, i) => {
-          _elementIdx += idx
           varVals.set(shape[i].name, new NumNode(idx))
         })
         varVals.set(shape[shapeIdx].name, new NumNode(i))
-        varValsArray[_elementIdx + i] = varVals
+        varValsArray[elementIdx++] = varVals
       }
       return
     }
 
-    for (let i = shape[0].min; i <= shape[0].max; i++) {
+    for (let i = shape[shapeIdx].min; i <= shape[shapeIdx].max; i++) {
       constructVarValsArray([...idxs, i], shapeIdx + 1)
-      elementIdx += shape[1].max - shape[1].min
     }
   }
   constructVarValsArray([], 0)
@@ -171,7 +168,7 @@ export const constructShapeLayoutAsVarVals = ({
       }
       return _varValsArray
     }
-    for (let i = shape[0].min; i <= shape[0].max; i++) {
+    for (let i = shape[shapeIdx].min; i <= shape[shapeIdx].max; i++) {
       const nested = constructVarValsArray([...idxs, i], shapeIdx + 1)
       _varValsArray.push(nested)
     }
