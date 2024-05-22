@@ -74,7 +74,7 @@ describe("Test parsers", () => {
         idx6: new Variable("idx6", 0, 2),
         idx7: new Variable("idx7", 0, 2),
       },
-      "((idx0 * 125) + (idx3 * 5) + (idx5 * 25) + (idx6 * 5) + idx4 + idx7)",
+      "((((((idx0 * 125) + (idx3 * 5)) + (idx5 * 25)) + (idx6 * 5)) + idx4) + idx7)",
     ],
     [
       "((idx2*45)+(idx5*9)+(idx6*3)+idx7)",
@@ -84,7 +84,7 @@ describe("Test parsers", () => {
         idx6: new Variable("idx6", 0, 2),
         idx7: new Variable("idx7", 0, 2),
       },
-      "((idx2 * 45) + (idx5 * 9) + (idx6 * 3) + idx7)",
+      "((((idx2 * 45) + (idx5 * 9)) + (idx6 * 3)) + idx7)",
     ],
   ])(
     "parse complex variable and expression %s %s",
