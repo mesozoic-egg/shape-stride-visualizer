@@ -8,10 +8,14 @@ import {
   ModNode,
   DivNode,
 } from "../model/variable"
-const MAX_PARENTHESES_DEPTH = 80
-const MAX_EVALUATE_LOOP_LIMIT = 80
-const MAX_EVALUATE_RECURSE_DEPTH = 30
-const MAX_LOOP_RECURSE_LIMIT = 30
+
+enum LIMIT {
+  SUB_STRING_DEPTH = 10,
+  STRING_LENGTH = 100,
+  DIGIT_LENGTH = 10,
+  VARIABLE_NAME_LENGTH = 10,
+}
+
 interface ParseArgs {
   expression: string
   variables?: Record<string, Variable>
@@ -39,24 +43,28 @@ const evaluateExpression = ({
   variables,
   recurseDepth,
 }: EvaluateArgs) => {
-  if (recurseDepth > MAX_EVALUATE_RECURSE_DEPTH) {
-    throw new Error("Max recursion depth exceeded while parsing")
+  if (recurseDepth > LIMIT.SUB_STRING_DEPTH) {
+    throw new Error(
+      `Max substring depth exceeded while recursing recurseDepth: ${recurseDepth}, expr: ${expr}`,
+    )
   }
   const stack: Node[] = []
   let currentOperand: Node
   let currentOperator: string = ""
   let i = 0
   while (true) {
-    if (i >= MAX_EVALUATE_LOOP_LIMIT) {
-      throw new Error("Max recursion depth exceeded while parsing")
+    if (i >= LIMIT.STRING_LENGTH) {
+      throw new Error(
+        `Max character length exceeded while iterating, i: ${i}, expr: ${expr}`,
+      )
     }
     const char = expr[i]
     if (isDigit(char)) {
       let end = i
       while (isDigit(expr[end])) {
-        if (end > MAX_EVALUATE_LOOP_LIMIT) {
+        if (end - i > LIMIT.DIGIT_LENGTH) {
           throw new Error(
-            "Max recursion/loop depth exceeded while parsing numbers",
+            `Max digit length exceeded while parsing numbers, i: ${i}, end: ${end} expr: ${expr}`,
           )
         }
         end++
@@ -97,10 +105,9 @@ const evaluateExpression = ({
             break
           }
         }
-        if (end >= MAX_PARENTHESES_DEPTH) {
-          console.error("parentheses end", end)
+        if (end - i > LIMIT.STRING_LENGTH) {
           throw new Error(
-            "Max recursion depth exceeded while matching parentheses",
+            `Max string length exceeded while matching parentheses, i: ${i}, end: ${end}, expr: ${expr}`,
           )
         }
       }
@@ -121,9 +128,9 @@ const evaluateExpression = ({
     } else if (char && /[a-zA-Z]/.test(char)) {
       let end = i
       while (expr[end] && /[a-zA-Z0-9]/.test(expr[end])) {
-        if (end > MAX_LOOP_RECURSE_LIMIT) {
+        if (end - i > LIMIT.VARIABLE_NAME_LENGTH) {
           throw new Error(
-            "Max recursion/loop depth exceeded while parsing variables",
+            `Max variable name length exceeded while parsing variables, i: ${i}, end: ${end}, expr: ${expr}`,
           )
         }
         end++
