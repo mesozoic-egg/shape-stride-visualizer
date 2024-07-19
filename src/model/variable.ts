@@ -32,6 +32,30 @@ export class Node {
     return new DivNode(this, b)
   }
 
+  lt(b: Node): Node {
+    const node = new LtNode(this, b)
+    return node
+  }
+
+  le(b: Node): Node {
+    const one_added = b.add(new NumNode(1))
+    return this.lt(one_added)
+  }
+
+  gt(b: Node): Node {
+    const node = new GtNode(this, b)
+    return node
+  }
+
+  ge(b: Node): Node {
+    const one_subtracted = b.add(new NumNode(-1))
+    return this.gt(one_subtracted)
+  }
+
+  and(b: Node): Node {
+    return new AndNode(this, b)
+  }
+
   render() {
     return _render(this)
   }
@@ -193,6 +217,81 @@ export class DivNode extends Node {
   }
 }
 
+export class AndNode extends Node {
+  public a: Node
+  public b: Node
+  constructor(a: Node, b: Node) {
+    super(0, 1)
+    this.a = a
+    this.b = b
+  }
+
+  substitute(varVals: VarVals) {
+    const lhs = this.a.substitute(varVals)
+    const rhs = this.b.substitute(varVals)
+    if (lhs instanceof NumNode && rhs instanceof NumNode) {
+      return new NumNode(lhs.value && rhs.value ? 1 : 0)
+    }
+    throw new Error(
+      "LHS or RHS of AndNode did not return NumNode after substitution",
+    )
+  }
+}
+
+export class LtNode extends Node {
+  public a: Node
+  public b: Node
+  constructor(a: Node, b: Node) {
+    if (a.max < b.min) {
+      super(1, 1)
+    } else if (a.min >= b.min) {
+      super(0, 0)
+    } else {
+      super(0, 1)
+    }
+    this.a = a
+    this.b = b
+  }
+
+  substitute(varVals: VarVals) {
+    const lhs = this.a.substitute(varVals)
+    const rhs = this.b.substitute(varVals)
+    if (lhs instanceof NumNode && rhs instanceof NumNode) {
+      return new NumNode(lhs.value < rhs.value ? 1 : 0)
+    }
+    throw new Error(
+      "LHS or RHS of LtNode did not return NumNode after substitution",
+    )
+  }
+}
+
+export class GtNode extends Node {
+  public a: Node
+  public b: Node
+  constructor(a: Node, b: Node) {
+    if (a.min > b.max) {
+      super(1, 1)
+    } else if (a.max <= b.max) {
+      super(0, 0)
+    } else {
+      super(0, 1)
+    }
+    this.a = a
+    this.b = b
+  }
+
+  substitute(varVals: VarVals) {
+    const lhs = this.a.substitute(varVals)
+    const rhs = this.b.substitute(varVals)
+    if (lhs instanceof NumNode && rhs instanceof NumNode) {
+      return new NumNode(lhs.value > rhs.value ? 1 : 0)
+    }
+    throw new Error(
+      "LHS or RHS of GtNode did not return NumNode after substitution",
+    )
+  }
+}
+
 const _render = (node: unknown): string => {
   if (node instanceof MulNode) {
     return `(${_render(node.a)} * ${_render(node.b)})`
@@ -208,6 +307,12 @@ const _render = (node: unknown): string => {
     return `(${_render(node.a)} // ${_render(node.b)})`
   } else if (node instanceof DivNode) {
     return `(${_render(node.a)} / ${_render(node.b)})`
+  } else if (node instanceof AndNode) {
+    return `(${_render(node.a)} & ${_render(node.b)})`
+  } else if (node instanceof LtNode) {
+    return `(${_render(node.a)} < ${_render(node.b)})`
+  } else if (node instanceof GtNode) {
+    return `(${_render(node.a)} > ${_render(node.b)})`
   } else if (node instanceof Node) {
     console.error(node)
     throw new Error("Base class cannot be rendered")

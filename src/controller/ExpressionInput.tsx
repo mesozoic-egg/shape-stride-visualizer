@@ -14,6 +14,10 @@ export enum EXAMPLES {
   COMPLEX = "((((((idx0 * 2) % 3) + idx1) % 3) * 3) + ((((idx0 * 2) + idx1) // 3) * 3))",
 }
 
+export enum VALID_EXPRESSION_EXAMPLE {
+  SIMPLE = "idx0 < 1 & (idx1 < 1)",
+}
+
 export const ExpressionInput: React.FC<ExpressionInputProps> = ({
   onConfirm,
   validate,
@@ -48,7 +52,7 @@ export const ExpressionInput: React.FC<ExpressionInputProps> = ({
       <br />
       {errMsg && <Text type="danger">Error: {errMsg}</Text>}
       <Space size={10} />
-      <Flex align="center" gap="small" justify="flex-start">
+      {/* <Flex align="center" gap="small" justify="flex-start">
         <Text strong>Try:</Text>
         <Button
           antType="default"
@@ -66,7 +70,7 @@ export const ExpressionInput: React.FC<ExpressionInputProps> = ({
         >
           {EXAMPLES.COMPLEX}
         </Button>
-      </Flex>
+      </Flex> */}
     </div>
   )
 }

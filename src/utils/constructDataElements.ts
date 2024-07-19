@@ -2,6 +2,7 @@ import {
   DataElement,
   MemorySlot,
   NestedDataElementArray,
+  MaskedDataElement,
 } from "../model/dataElement"
 import { Variable, Node, VarVals, NumNode } from "../model/variable"
 
@@ -10,7 +11,7 @@ interface ConstructDataElementsArgs {
   shape: number[]
   stride: number[]
 }
-type DataElements = (DataElement | MemorySlot)[]
+type DataElements = (DataElement | MemorySlot | MaskedDataElement)[]
 export const constructDataElements = ({
   shape,
   stride,
@@ -21,7 +22,8 @@ export const constructDataElements = ({
       for (let i = 0; i < shape[0]; i++) {
         const _address = address + i * stride[0]
         if (!elements[_address]) {
-          elements[_address] = new DataElement(_address)
+          const node = new DataElement(_address)
+          elements[_address] = node
         }
       }
     }
@@ -44,35 +46,64 @@ interface ArangeIntoShapeArgs {
   dataElements: DataElements
   shape: number[]
   stride: number[]
+  masks?: [number, number][]
 }
 export const arrangeIntoShape = ({
   dataElements,
   shape,
   stride,
+  masks,
 }: ArangeIntoShapeArgs) => {
-  const fill = (_shape: number[], _stride: number[], address: number) => {
+  const fill = (
+    _shape: number[],
+    _stride: number[],
+    address: number,
+    valid: boolean = true,
+    _masks?: [number, number][],
+  ) => {
     if (_shape.length === 1) {
       const elements: DataElement[] = []
       for (let i = 0; i < _shape[0]; i++) {
-        const elem = dataElements[address + i * _stride[0]]
+        const _address = address + i * _stride[0]
+        const elem = dataElements[_address]
         if (!elem) {
           throw new Error(
             "dataElements must contain all the elements in the shape",
           )
         }
-        elements.push(elem)
+        let _valid = valid
+        if (_masks) {
+          _valid = valid && i >= _masks[0][0] && i <= _masks[0][1]
+        }
+        if (_valid) {
+          elements.push(elem)
+        } else {
+          elements.push(new MaskedDataElement(_address))
+        }
       }
       return elements
     }
     const elements: NestedDataElementArray[] = []
     for (let i = 0; i < _shape[0]; i++) {
-      elements.push(fill(_shape.slice(1), _stride.slice(1), address))
+      let _childIsValid = true
+      if (masks) {
+        _childIsValid = i >= masks?.[0]?.[0] && i <= masks?.[0]?.[1]
+      }
+      elements.push(
+        fill(
+          _shape.slice(1),
+          _stride.slice(1),
+          address,
+          _childIsValid,
+          _masks?.slice?.(1),
+        ),
+      )
       address += _stride[0]
     }
     return elements
   }
   try {
-    return fill(shape, stride, START) as NestedDataElementArray
+    return fill(shape, stride, START, true, masks) as NestedDataElementArray
   } catch (e) {
     console.error(e)
     return []
@@ -182,11 +213,13 @@ interface SubstituteVarValsShapeLayoutArgs {
   dataElements: DataElement[]
   shapeLayout: NestedVarVals
   expression: Node
+  validExpression?: Node
 }
 export const substituteVarValsShapeLayout = ({
   dataElements,
   shapeLayout,
   expression,
+  validExpression,
 }: SubstituteVarValsShapeLayoutArgs) => {
   const fill = (
     _layout: (NestedVarVals | VarVals)[],
@@ -214,6 +247,15 @@ export const substituteVarValsShapeLayout = ({
       throw new Error(
         `Data elements array did not contain corresponding element at address ${address}`,
       )
+    }
+    if (validExpression) {
+      const valid = validExpression.substitute(varVals)
+      if (!(valid instanceof NumNode)) {
+        throw new Error("Valid expression not evaluated to NumNode")
+      }
+      if (valid.value === 0) {
+        return new MaskedDataElement(address)
+      }
     }
     return element
   }

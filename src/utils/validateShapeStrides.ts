@@ -7,19 +7,33 @@ class ShapeStrideValidatorError {
 export type ShapeStrideValidator = (
   shape: number[],
   stride: number[],
+  masks?: [number, number][],
 ) => undefined | ShapeStrideValidatorError
 
 export const validateShapeStrides: ShapeStrideValidator = (
-  shape: number[],
-  stride: number[],
+  shape,
+  stride,
+  masks,
 ) => {
   if (shape.length !== stride.length) {
     return new ShapeStrideValidatorError(
-      "Shape and stride must be the same length",
+      "Shape, stride must be the same length",
     )
   }
   if (shape.some((dim) => dim <= 0)) {
     return new ShapeStrideValidatorError("Shape must be bigger than zero")
+  }
+  if (masks) {
+    if (masks.length !== shape.length) {
+      return new ShapeStrideValidatorError(
+        "Masks must be the same length as shape",
+      )
+    }
+    if (masks.some((mask) => mask[0] > mask[1])) {
+      return new ShapeStrideValidatorError(
+        "Mask start must be less than or equal mask end",
+      )
+    }
   }
 }
 

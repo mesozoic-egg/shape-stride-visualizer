@@ -81,4 +81,41 @@ describe("Test substitution", () => {
     expect(res instanceof NumNode).toBe(true)
     expect((res as NumNode).value).toBe(8)
   })
+
+  it("comparison substitution", () => {
+    const a = new Variable("a", 0, 10)
+    const lessThan5 = a.lt(new NumNode(5))
+    const varVals = new Map()
+    varVals.set(a.name, new NumNode(4))
+    const res = lessThan5.substitute(varVals)
+    expect(res instanceof NumNode).toBe(true)
+    expect((res as NumNode).value).toBe(1)
+
+    const lessOrEqualThan5 = a.le(new NumNode(5))
+    const res2 = lessOrEqualThan5.substitute(varVals)
+    expect(res2 instanceof NumNode).toBe(true)
+    expect((res2 as NumNode).value).toBe(1)
+
+    const greaterThan5 = a.gt(new NumNode(5))
+    const res3 = greaterThan5.substitute(varVals)
+    expect(res3 instanceof NumNode).toBe(true)
+    expect((res3 as NumNode).value).toBe(0)
+
+    const greaterOrEqualThan5 = a.ge(new NumNode(5))
+    const res4 = greaterOrEqualThan5.substitute(varVals)
+    expect(res4 instanceof NumNode).toBe(true)
+    expect((res4 as NumNode).value).toBe(0)
+  })
+
+  it("'and' logic", () => {
+    const a = new Variable("a", 0, 10)
+    const b = new Variable("b", 0, 10)
+    const c = a.lt(new NumNode(5)).and(b.gt(new NumNode(5)))
+    const varVals = new Map()
+    varVals.set(a.name, new NumNode(4))
+    varVals.set(b.name, new NumNode(6))
+    const res = c.substitute(varVals)
+    expect(res instanceof NumNode).toBe(true)
+    expect((res as NumNode).value).toBe(1)
+  })
 })

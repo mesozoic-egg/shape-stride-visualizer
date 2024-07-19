@@ -1,13 +1,16 @@
-import { InputNumber } from "../view/ui"
+import { InputNumber, Input } from "../view/ui"
 import { useState, useEffect } from "react"
+
+export type AttributeValidator = (value: string | number) => [boolean, string]
 
 interface InputBoxProps {
   label: string
   onValueConfirm: (value: string | number) => void
   id: number
   prefilled?: string | number
-  validator: (value: string | number) => boolean
+  validator: AttributeValidator
   disabled?: boolean
+  type?: string
 }
 export const InputBox: React.FC<InputBoxProps> = ({
   prefilled = "",
@@ -16,6 +19,7 @@ export const InputBox: React.FC<InputBoxProps> = ({
   id,
   validator,
   disabled,
+  type,
 }) => {
   const [value, setValue] = useState<unknown>(prefilled)
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
@@ -23,27 +27,41 @@ export const InputBox: React.FC<InputBoxProps> = ({
     if (
       value !== undefined &&
       value !== null &&
-      (typeof value === "string" || typeof value === "number") &&
-      validator(value)
+      (typeof value === "number" || typeof value === "string")
     ) {
-      setErrorMsg(undefined)
-      onValueConfirm(value)
+      const [valid, reason] = validator(value)
+      if (valid) {
+        setErrorMsg(undefined)
+        onValueConfirm(value)
+      } else {
+        setErrorMsg(reason)
+      }
     } else {
-      setErrorMsg("Enter an integer")
+      setErrorMsg("Enter a value of type number or string")
     }
   }, [id, value, onValueConfirm, validator])
   return (
     <div>
       <label>{label}</label>
       <br />
-      <InputNumber
-        width={60}
-        value={value as any}
-        onChange={(e) => {
-          setValue(e.target.value)
-        }}
-        disabled={disabled}
-      />
+      {type === "string" ? (
+        <Input
+          value={value as any}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          width={60}
+        />
+      ) : (
+        <InputNumber
+          width={60}
+          value={value as any}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          disabled={disabled}
+        />
+      )}
       {errorMsg && <div style={{ color: "red" }}>{errorMsg}</div>}
     </div>
   )

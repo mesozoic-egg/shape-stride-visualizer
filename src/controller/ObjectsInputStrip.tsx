@@ -1,24 +1,27 @@
 import { useEffect, useState, useCallback } from "react"
 import { Button, Card, Flex, Space, Text, TextAlign } from "../view/ui"
 import { DeleteOutlined, PlusOutlined } from "../view/icons"
-import { InputBox } from "./InputBoxGeneric"
+import { InputBox, AttributeValidator } from "./InputBoxGeneric"
 
 interface Attribute {
   key: string
   value: string | number
   disabled?: boolean
+  type: string
 }
 interface GenericObjectInterface {
   id: number
   attributes: Attribute[]
 }
 
+export type AttributesValidators = Record<string, AttributeValidator>
+
 interface ObjectInputStripProps<
   ObjectInterface extends GenericObjectInterface,
 > {
   onConfirm: (objects: ObjectInterface[]) => void
   validate: (objs: ObjectInterface[]) => boolean
-  attributeValidators: Record<string, (value: string | number) => boolean>
+  attributeValidators: AttributesValidators
   initializer: () => ObjectInterface[]
   constructor: (id: number) => ObjectInterface
   initialCount: number
@@ -118,6 +121,7 @@ export const ObjectInputStrip = <
                       prefilled={attr.value}
                       validator={validator}
                       disabled={attr.disabled}
+                      type={attr.type}
                     />
                   )
                 })}

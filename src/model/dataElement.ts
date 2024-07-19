@@ -1,4 +1,7 @@
-export type NestedDataElementArray = (DataElement | NestedDataElementArray)[]
+export type NestedDataElementArray = (
+  | DataElementMaybeMasked
+  | NestedDataElementArray
+)[]
 export class MemorySlot {
   constructor(public address: number) {}
 
@@ -12,3 +15,5 @@ export class MemorySlot {
 }
 
 export class DataElement extends MemorySlot {}
+export class MaskedDataElement extends MemorySlot {}
+export type DataElementMaybeMasked = DataElement | MaskedDataElement

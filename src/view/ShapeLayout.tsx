@@ -1,7 +1,25 @@
 import { Button, NoWrap } from "./ui"
-import { NestedDataElementArray } from "../model/dataElement"
+import {
+  NestedDataElementArray,
+  DataElementMaybeMasked,
+  MaskedDataElement,
+} from "../model/dataElement"
 
-interface ShapeLayoutProps {
+interface ButtonMaybeMaskedProps {
+  masked?: boolean
+  children: React.ReactNode
+}
+const ButtonMaybeMasked: React.FC<ButtonMaybeMaskedProps> = ({
+  masked,
+  children,
+}) => {
+  return (
+    <Button width={80} margin={2} antType={masked ? "dashed" : "primary"}>
+      {children}
+    </Button>
+  )
+}
+export interface ShapeLayoutProps {
   shape: number[]
   dataElements: NestedDataElementArray
 }
@@ -17,11 +35,16 @@ export const ShapeLayout: React.FC<ShapeLayoutProps> = ({
       <div>
         <span>[</span>
         <span>
-          {dataElements.map((element, i) => (
-            <Button width={80} margin={2} antType="dashed" key={`data-${i}`}>
-              {element.toString()}
-            </Button>
-          ))}
+          {(dataElements as DataElementMaybeMasked[]).map((element, i) => {
+            return (
+              <ButtonMaybeMasked
+                key={`data-${i}`}
+                masked={element instanceof MaskedDataElement}
+              >
+                {element.toString()}
+              </ButtonMaybeMasked>
+            )
+          })}
         </span>
         <span>]</span>
       </div>

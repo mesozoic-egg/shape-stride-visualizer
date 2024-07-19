@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { MemoryVisualizer } from "./MemoryVisualizer"
-import { ShapeStrideInput } from "./ShapeStrideInput"
+import { ShapeStrideInput, ShapeStrideMasks } from "./ShapeStrideInput"
 import { DataElement, NestedDataElementArray } from "../model/dataElement"
 import {
   arrangeIntoShape,
@@ -10,34 +10,35 @@ import { ShapeVisualizer } from "./ShapeVisualizer"
 import { validateShapeStrides } from "../utils/validateShapeStrides"
 
 export const ShapeStrideVisualizer: React.FC<{}> = () => {
-  const [shapeStrides, setShapeStrides] = useState<number[][]>([[], []])
+  const [shapeStridesMasks, setShapeStridesMasks] = useState<ShapeStrideMasks>()
   const [memoryLayout, setMemoryLayout] = useState<DataElement[]>([])
   const [shapeLayout, setShapeLayout] = useState<
     [NestedDataElementArray, number[]]
   >([[], []])
   useEffect(() => {
-    if (
-      shapeStrides.length &&
-      shapeStrides[0].length &&
-      shapeStrides[1].length
-    ) {
-      const elements = constructDataElements({
-        shape: shapeStrides[0],
-        stride: shapeStrides[1],
-      })
-      const elementsAsShape = arrangeIntoShape({
-        dataElements: elements,
-        shape: shapeStrides[0],
-        stride: shapeStrides[1],
-      })
-      setShapeLayout([elementsAsShape, shapeStrides[0]])
-      setMemoryLayout(elements)
+    if (shapeStridesMasks) {
+      try {
+        const elements = constructDataElements({
+          shape: shapeStridesMasks.shape,
+          stride: shapeStridesMasks.strides,
+        })
+        const elementsAsShape = arrangeIntoShape({
+          dataElements: elements,
+          shape: shapeStridesMasks.shape,
+          stride: shapeStridesMasks.strides,
+          masks: shapeStridesMasks.masks,
+        })
+        setShapeLayout([elementsAsShape, shapeStridesMasks.shape])
+        setMemoryLayout(elements)
+      } catch (e) {
+        console.error(e)
+      }
     }
-  }, [shapeStrides])
+  }, [shapeStridesMasks])
   return (
     <div>
       <ShapeStrideInput
-        onConfirmShapeStrides={setShapeStrides}
+        onConfirmShapeStrides={setShapeStridesMasks}
         validateShapeStrides={validateShapeStrides}
       />
       <MemoryVisualizer dataElements={memoryLayout} />

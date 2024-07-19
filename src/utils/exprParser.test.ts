@@ -1,5 +1,5 @@
 import { Variable } from "../model/variable"
-import { parse, validateVariables } from "./exprParser"
+import { parse, validateVariables, surroundNegateWithParen } from "./exprParser"
 
 describe("Test parsers", () => {
   test.each([
@@ -10,6 +10,10 @@ describe("Test parsers", () => {
     ["12 + 4", "(12 + 4)"],
     ["13 // 4", "(13 // 4)"],
     ["13 / 4", "(13 / 4)"],
+    ["4 < 10", "(4 < 10)"],
+    ["4 > 10", "(4 > 10)"],
+    ["-2", "(-1 * 2)"],
+    ["1 + (-2)", "(1 + (-1 * 2))"],
   ])('parse arithmetic "%s"', (expression, expected) => {
     expect(parse({ expression }).render()).toBe(expected)
   })
@@ -20,6 +24,10 @@ describe("Test parsers", () => {
     ["a + (b * c)", "(a + (b * c))"],
     ["a + 12", "(a + 12)"],
     ["(a + b) + b", "((a + b) + b)"],
+    ["a < 10", "(a < 10)"],
+    ["a > 10", "(a > 10)"],
+    ["a <= 10", "(a < (10 + 1))"],
+    ["a >= 10", "(a > (10 + -1))"],
   ])('parse variables "%s"', (expression, expected) => {
     expect(
       parse({
@@ -86,6 +94,42 @@ describe("Test parsers", () => {
       },
       "((((idx2 * 45) + (idx5 * 9)) + (idx6 * 3)) + idx7)",
     ],
+    [
+      "a < 10",
+      {
+        a: new Variable("a", 0, 20),
+      },
+      "(a < 10)",
+    ],
+    [
+      "a <= 10",
+      {
+        a: new Variable("a", 0, 20),
+      },
+      "(a < (10 + 1))",
+    ],
+    [
+      "a >= 10",
+      {
+        a: new Variable("a", 0, 20),
+      },
+      "(a > (10 + -1))",
+    ],
+    [
+      "a > 10",
+      {
+        a: new Variable("a", 0, 20),
+      },
+      "(a > 10)",
+    ],
+    [
+      "a > 10 & (b > 10)",
+      {
+        a: new Variable("a", 15, 20),
+        b: new Variable("b", 15, 20),
+      },
+      "((a > 10) & (b > 10))",
+    ],
   ])(
     "parse complex variable and expression %s %s",
     (expression, variables, expected) => {
@@ -115,5 +159,16 @@ describe("test validateVariables", () => {
     ["(idx0 + idx1)", { idx0: new Variable("idx0", 0, 1) }],
   ])('some variables not present "%s" "%s"', (expression, variables) => {
     expect(validateVariables(expression, variables)).toBe(false)
+  })
+})
+
+describe("Replacer", () => {
+  test.each([
+    ["a + -1", "a + (-1)"],
+    ["a + -1 * 2", "a + (-1) * 2"],
+    ["a + -1 * 2 + 3", "a + (-1) * 2 + 3"],
+    ["a + -1 * 2 + -1 * 3 - 4", "a + (-1) * 2 + (-1) * 3 - 4"],
+  ])("surroundNegateWithParen", (input, expected) => {
+    expect(surroundNegateWithParen(input)).toBe(expected)
   })
 })

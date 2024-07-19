@@ -7,13 +7,16 @@ import {
   FloorDivNode,
   ModNode,
   DivNode,
+  LtNode,
+  AndNode,
 } from "../model/variable"
 
 enum LIMIT {
   SUB_STRING_DEPTH = 10,
-  STRING_LENGTH = 100,
+  STRING_LENGTH = 200,
   DIGIT_LENGTH = 10,
   VARIABLE_NAME_LENGTH = 10,
+  WHILE_LOOP_COUNT = 100,
 }
 
 interface ParseArgs {
@@ -22,6 +25,8 @@ interface ParseArgs {
 }
 export const parse = ({ expression, variables }: ParseArgs) => {
   let _expr = removeWhitespace(expression)
+  _expr = replaceAndWithAmpersand(_expr)
+  _expr = surroundNegateWithParen(_expr)
   if (!validateMatchingParenthese(_expr)) {
     throw new Error("Parentheses are not matching")
   }
@@ -30,6 +35,10 @@ export const parse = ({ expression, variables }: ParseArgs) => {
   }
   return evaluateExpression({ expression: _expr, variables, recurseDepth: 0 })
 }
+
+const replaceAndWithAmpersand = (expr: string) => expr.replace(/and/g, "&")
+export const surroundNegateWithParen = (expr: string) =>
+  expr.replace(/-[0-9]+/g, "($&)")
 
 const removeWhitespace = (expr: string) => {
   return expr.replace(/\s/g, "")
@@ -52,7 +61,13 @@ const evaluateExpression = ({
   let currentOperand: Node
   let currentOperator: string = ""
   let i = 0
+  let whileLoopCount = 0
   while (true) {
+    if (whileLoopCount++ > LIMIT.WHILE_LOOP_COUNT) {
+      throw new Error(
+        `Max while loop count exceeded while iterating, i: ${i}, expr: ${expr}`,
+      )
+    }
     if (i >= LIMIT.STRING_LENGTH) {
       throw new Error(
         `Max character length exceeded while iterating, i: ${i}, expr: ${expr}`,
@@ -87,6 +102,18 @@ const evaluateExpression = ({
       if (char === "/") {
         if (expr[i + 1] === "/") {
           currentOperator = "//"
+          i++
+        }
+      }
+      if (char === "<") {
+        if (expr[i + 1] === "=") {
+          currentOperator = "<="
+          i++
+        }
+      }
+      if (char === ">") {
+        if (expr[i + 1] === "=") {
+          currentOperator = ">="
           i++
         }
       }
@@ -176,7 +203,7 @@ const isDigit = (char: string) => {
 }
 
 const isOperator = (char: string) => {
-  return /[+\-*/%]/.test(char)
+  return /[+\-*/%<>&]/.test(char)
 }
 
 const pushNodeToStack = (
@@ -190,9 +217,16 @@ const pushNodeToStack = (
   if (!currentOperator) {
     throw new Error("Current operator is undefined")
   }
+  if (currentOperator === "-") {
+    const item = new MulNode(new NumNode(-1), currentOperand)
+    stack.push(item)
+    return stack
+  }
   const operand1 = stack.pop()
   if (!operand1) {
-    throw new Error("Nothing was popped from stack")
+    throw new Error(
+      `Nothing was popped from stack. Current operator: ${currentOperator}, currentOperand: ${currentOperand}`,
+    )
   }
   switch (currentOperator) {
     case "+": {
@@ -229,6 +263,31 @@ const pushNodeToStack = (
       }
       const currentOperandAsNumNode = currentOperand as NumNode
       const item = new ModNode(operand1, currentOperandAsNumNode)
+      stack.push(item)
+      break
+    }
+    case "<": {
+      const item = operand1.lt(currentOperand)
+      stack.push(item)
+      break
+    }
+    case "<=": {
+      const item = operand1.le(currentOperand)
+      stack.push(item)
+      break
+    }
+    case ">=": {
+      const item = operand1.ge(currentOperand)
+      stack.push(item)
+      break
+    }
+    case ">": {
+      const item = operand1.gt(currentOperand)
+      stack.push(item)
+      break
+    }
+    case "&": {
+      const item = new AndNode(operand1, currentOperand)
       stack.push(item)
       break
     }
@@ -273,7 +332,10 @@ export const validateExpressionInput = ({
   expression,
   variables,
 }: ParseArgs): [boolean, string] => {
-  if (!validateMatchingParenthese(expression)) {
+  let _expr = removeWhitespace(expression)
+  _expr = replaceAndWithAmpersand(_expr)
+  _expr = surroundNegateWithParen(_expr)
+  if (!validateMatchingParenthese(_expr)) {
     return [false, "Parentheses are not matching"]
   }
   if (variables && !validateVariables(expression, variables)) {

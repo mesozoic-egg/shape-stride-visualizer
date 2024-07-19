@@ -10,8 +10,12 @@ import { DataElement, NestedDataElementArray } from "../model/dataElement"
 import { MemoryVisualizer } from "./MemoryVisualizer"
 import { Title, Text, NoWrap } from "../view/ui"
 import { ShapeVisualizer } from "./ShapeVisualizer"
-import { ObjectInputStrip } from "./ObjectsInputStrip"
-import { ExpressionInput, EXAMPLES } from "./ExpressionInput"
+import { ObjectInputStrip, AttributesValidators } from "./ObjectsInputStrip"
+import {
+  ExpressionInput,
+  EXAMPLES,
+  VALID_EXPRESSION_EXAMPLE,
+} from "./ExpressionInput"
 import { parse, validateExpressionInput } from "../utils/exprParser"
 import { validateShapeLayout } from "../utils/validateShapeStrides"
 interface VariableInterface {
@@ -20,13 +24,23 @@ interface VariableInterface {
     key: string
     value: string | number
     disabled?: boolean
+    type: string
   }[]
 }
 
-const attributesValidator = {
-  name: (s: string | number) => /[a-z]/.test(s.toString()),
-  min: (s: string | number) => /^\d+$/.test(s.toString()),
-  max: (s: string | number) => /^\d+$/.test(s.toString()),
+const attributesValidator: AttributesValidators = {
+  name: (s: string | number) =>
+    /[a-z]/.test(s.toString())
+      ? [true, ""]
+      : [false, "Enter a value of type string"],
+  min: (s: string | number) =>
+    /^\d+$/.test(s.toString())
+      ? [true, ""]
+      : [false, "Enter a value of type number or string"],
+  max: (s: string | number) =>
+    /^\d+$/.test(s.toString())
+      ? [true, ""]
+      : [false, "Enter a value of type number or string"],
 }
 const constructor = (id: number, opt?: { min?: number; max?: number }) => {
   return {
@@ -35,15 +49,18 @@ const constructor = (id: number, opt?: { min?: number; max?: number }) => {
       {
         key: "name",
         value: `idx${id}`,
+        type: "string",
       },
       {
         key: "min",
         value: opt?.min ?? 0,
         disabled: true,
+        type: "number",
       },
       {
         key: "max",
         value: opt?.max ?? 1,
+        type: "number",
       },
     ],
   }
@@ -59,6 +76,7 @@ export const ExprIdxVisualizer = () => {
     ]
   }, [])
   const [typed, setTyped] = useState("")
+  const [validExpression, setValidExpression] = useState("")
   const [expression, setExpression] = useState<Node>()
   const [err, setErr] = useState("")
   const [renderLayoutErr, setRenderLayoutErr] = useState("")
@@ -121,6 +139,10 @@ export const ExprIdxVisualizer = () => {
             expression: typed,
             variables: variableMap,
           })
+          const _validExpression = parse({
+            expression: validExpression,
+            variables: variableMap,
+          })
           const expression = _expression
           const shape = variableNodes
           const shapeAsNum = variableNodes.map((v) => v.max + 1)
@@ -132,10 +154,12 @@ export const ExprIdxVisualizer = () => {
             expression,
           })
           const varValsShape = constructShapeLayoutAsVarVals({ shape })
+
           const dataElementsLayout = substituteVarValsShapeLayout({
             dataElements: _dataElements,
             shapeLayout: varValsShape,
             expression,
+            validExpression: _validExpression,
           })
           const [valid, errMsg] = validateShapeLayout({
             shape: shapeAsNum,
@@ -161,7 +185,7 @@ export const ExprIdxVisualizer = () => {
         }
       }
     }
-  }, [variables, resetComputed, typed])
+  }, [variables, resetComputed, typed, validExpression])
 
   return (
     <div>
@@ -186,6 +210,15 @@ export const ExprIdxVisualizer = () => {
         validate={() => [true, ""]}
         placeholder="Type your expression with the variables intiialized above or click on the example button to fill automatically"
         prefilled={EXAMPLES.COMPLEX}
+      />
+      <ExpressionInput
+        variables={variableNodes}
+        onConfirm={(expression) => {
+          setValidExpression(expression)
+        }}
+        validate={() => [true, ""]}
+        placeholder="Type the valid expression"
+        prefilled={VALID_EXPRESSION_EXAMPLE.SIMPLE}
       />
       {err && (
         <div>

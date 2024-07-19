@@ -235,6 +235,7 @@ interface InputProps {
   prefix?: React.ReactNode
   allowClear?: boolean
   maxWidth?: number
+  width?: number
 }
 export const Input: React.FC<InputProps> = ({
   value,
@@ -244,6 +245,7 @@ export const Input: React.FC<InputProps> = ({
   prefix,
   allowClear,
   maxWidth,
+  width,
 }) => {
   return (
     <InputAnt
@@ -255,6 +257,7 @@ export const Input: React.FC<InputProps> = ({
       placeholder={placeholder}
       style={{
         maxWidth: maxWidth,
+        width: width,
       }}
     />
   )
