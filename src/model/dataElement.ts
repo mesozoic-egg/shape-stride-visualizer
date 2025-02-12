@@ -6,7 +6,7 @@ export class MemorySlot {
   constructor(public address: number) {}
 
   toString() {
-    return `0x${this.address}`
+    return `0x${this.address.toString(16)}`
   }
 
   toJSON() {
